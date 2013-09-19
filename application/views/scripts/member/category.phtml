@@ -1,0 +1,93 @@
+<div id="container" class="member_listing">
+    <div class="main_box left members_list">
+        <h3 class="left">MEMBER LISTING</h3>
+        
+        <?php echo $this->render('member/member-search-box.phtml');?>
+        
+        <div class="clear"></div>
+        
+        <?php
+        if(isset($this->membersCategoryAll) && !empty($this->membersCategoryAll)) {
+        ?>
+        
+        <div class="pagination left">
+            <?php echo $this->pagination?>    
+        </div><!-- END mail_pagination   -->
+
+        <?php echo $this->partial('member/_member-sort-pagination.phtml', 
+                                  array('action' => 'category', 
+                                        'searchType' => $this->searchType, 
+                                        'categoryId' => $this->categoryId));?>
+        
+        <?php
+        }
+        ?>
+        
+        <div class="clear"></div>
+        
+        <?php
+        if(!empty($this->membersCategoryAll)) {
+            foreach($this->membersCategoryAll as $defaultMember) {
+        ?>
+        
+        <div class="rec_memb_box left">
+            <div class="foto_box left">
+                <a href="<?php echo $this->baseUrl('account/profile'); ?>/<?php echo $defaultMember->getUsername()?>">
+                    
+                    <?
+                    if($defaultMember->getProfileImage() == '') {    
+                    ?>
+
+                    <img src="<?php echo $this->baseUrl('images/no_image.png'); ?>" style="height:88px;width:88px;">  
+
+                    <?
+                    } else {
+                    ?>
+
+                    <img src="<?php echo $this->baseUrl('images/profile_image/thumb'); ?>/<?php echo $defaultMember->getProfileImage()?>" 
+                         style="height:88px;width:88px;">  
+
+                    <?
+                    }
+                    ?>
+                
+                </a>
+            </div>
+            <div class="memb_info left">
+                 <a href="<?php echo $this->baseUrl('account/profile'); ?>/<?php echo $defaultMember->getUsername()?>"> 
+                     <span class="username">
+                         <?php echo $defaultMember->getUsername()?>
+                     </span>
+                 </a>
+                 <div class="clear"></div>
+                 <span>Category : <?php echo $defaultMember->getPrimaryCategory()->getCategoryTitle()?></span>
+                 <span>Member since : <?php echo date('d M Y',strtotime($defaultMember->getCreatedOn()))?></span>
+                 <span>Rating : <?php echo $defaultMember->getRating()?></span>
+                 <span>Projects Complete : <?php echo $defaultMember->getUserWorked()?></span>
+                 <span>Location : <?php //echo substr(getCountryFullName($defaultMember->getCountry()), 0, 24)?>...</span>
+            </div>
+            <div class="clear"></div>
+        </div><!-- END rec_memb_box  (3) -->
+            
+        <?
+        }
+        ?>
+            
+        <div class="clear"></div>
+        <div class="pagination">
+            <?php echo $this->pagination?>
+        </div><!-- END mail_pagination   -->
+        
+        <?php
+        }  
+        ?>
+        
+        </div><!-- END memb_list   -->
+
+    <?php echo $this->render('member/member-category-list.phtml');?>
+
+    <?php echo $this->render('bottom-three-btn.phtml');?>
+
+    <div class="clear"></div>
+</div><!-- END container   -->
+

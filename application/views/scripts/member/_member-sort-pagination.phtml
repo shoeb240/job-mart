@@ -1,0 +1,21 @@
+<div class="pagination right">
+    <span><b>Sort : </b></span>
+    <a href="<?php echo $this->baseUrl('member/' . ($this->action ? $this->action . '/' : '') 
+                                                 . ($this->categoryId ? $this->categoryId . '/' : '') 
+                                                 . 'newest'); ?>" 
+        <? if($this->searchType == '' || $this->searchType == 'newest'){ ?> class="current_page"<? }?>> 
+        Newest 
+    </a><span> / </span>
+    <a href="<?php echo $this->baseUrl('member/' . ($this->action ? $this->action . '/' : '') 
+                                                 . ($this->categoryId ? $this->categoryId . '/' : '') 
+                                                 . 'rating'); ?>" 
+       <? if($this->searchType == 'rating'){ ?> class="current_page"<? }?>> 
+        Rating 
+    </a><span> / </span>
+    <a href="<?php echo $this->baseUrl('member/' . ($this->action ? $this->action . '/' : '') 
+                                                 . ($this->categoryId ? $this->categoryId . '/' : '') 
+                                                 . 'alphabetical'); ?>" 
+       <? if($this->searchType == 'alphabetical'){ ?> class="current_page"<? }?>> 
+        Alphabetical 
+    </a>
+</div><!-- END mail_pagination   -->

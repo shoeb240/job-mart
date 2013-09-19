@@ -1,0 +1,23 @@
+<div class="main_box right featur_profile member_cat">
+    <h3></h3>
+    <ul>
+        
+        <?php
+        if(isset($this->primaryCategories) && !empty($this->primaryCategories)){
+            foreach ($this->primaryCategories as $category){
+        ?>
+        
+            <li>
+                <a href="<?php echo $this->baseUrl('member/category') . '/' . $category->getPrimaryCategoryId();?>" 
+                   class="<?php if($category->getPrimaryCategoryId() == $this->categoryId) { echo 'active'; }?>">
+                       <?php echo $category->getCategoryTitle();?>
+                </a>
+            </li>
+            
+        <?php
+            }
+        }
+        ?>
+            
+    </ul>
+</div><!-- END feature_profile   -->

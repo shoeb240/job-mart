@@ -1,0 +1,69 @@
+<div class="member_listing" id="container">
+    <div class="main_box left members_list" style="width:100%">
+
+        <h3 class="left">CREATIVE MEMBER SEARCH RESULT</h3>
+        
+        <?php echo $this->render('member/member-search-box.phtml');?>
+        
+        <div class="clear"></div>
+
+        <?
+        if(!empty($this->searchedCreatives)) {
+            foreach($this->searchedCreatives as $creative) {   
+        ?>
+        
+        <div class="rec_memb_box left" style="width:32%">
+            <div class="foto_box left">
+                <a href="<?php echo $this->baseUrl('account/profile') . '/' . $creative->getUsername();?>">
+                    
+                <?php
+                if($creative->getProfileImage() == '') {    
+                ?>
+                    
+                <img src="<?php echo $this->baseUrl('images/no_image.png')?>" style="height:88px;width:88px;">  
+                    
+                <?php
+                } else {
+                ?>
+                    
+                <img style="height:88px;width:88px;" src="<?php echo $this->baseUrl('images/profile_image/thumb') . '/' . $creative->getProfileImage()?>">  
+                
+                <?
+                }
+                ?> 
+                    
+                </a>
+              </div>
+              <div class="memb_info left">
+                  <a href="<?php echo $this->baseUrl('account/profile') . '/' . $creative->getUsername();?>"> 
+                      <span class="username"><?php echo $creative->getUsername();?></span>
+                  </a>
+                  <div class="clear"></div>
+                  <span>Category : <?php echo $creative->getPrimaryCategory()->getCategoryTitle()?></span>
+                  <span>Member since : <?php echo date('d M Y',strtotime($creative->getCreatedOn()))?></span>
+                  <span>Rating : <?php echo $creative->getRating()?></span>
+                  <span>Projects Open : <?php echo $creative->getOpenProjects()?></span>
+                  <span>Projects Complete : <?php echo $creative->getUserHired();?></span>
+                  <span>Location : <?php //echo getCountryFullName($creative->getCountry())?></span>
+              </div>
+              <div class="clear"></div>
+          </div>
+        
+        <?
+            }
+        } else {
+            echo '<center><h3>NO CREATIVE MEMBER FOUND THAT YOU SEARCH!</h3></center>';
+        }
+        ?>                 
+
+        <div class="clear"></div>
+        <div class="pagination">  
+            <?//=$pagination?>
+        </div><!-- END mail_pagination   -->
+    </div><!-- END memb_list   -->
+
+    <?php echo $this->render('bottom-three-btn.phtml');?>  
+
+    <div class="clear"></div>
+</div>
+

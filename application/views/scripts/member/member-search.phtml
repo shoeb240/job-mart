@@ -1,0 +1,100 @@
+<?
+if ($this->searchedMembers) {
+?>
+
+<div class="member_listing" id="container">
+    <div class="main_box left members_list" style="width:100%">
+        
+        <h3 class="left">MEMBER LISTING</h3>
+        
+        <?php echo $this->render('member/member-search-box.phtml');?>
+        
+        <div class="clear"></div>
+        
+        <?
+        if (!empty($this->searchedMembers)) {
+            foreach($this->searchedMembers as $member) {
+        ?>
+        
+        <div class="rec_memb_box left" style="width:32%">
+            <div class="foto_box left">
+                <a href="<?php echo $this->baseUrl('account/profile'); ?>/<?php echo $member->getUsername();?>"> 
+                    
+                    <?php
+                    if ($member->getProfileImage() == '') {    
+                    ?>
+
+                    <img src="<?php echo $this->baseUrl('images/no_image.png'); ?>" style="height:88px;width:88px;">  
+
+                    <?
+                    } else {
+                    ?>
+
+                    <img style="height:88px;width:88px;" alt="NO IMAGE" src="<?php echo $this->baseUrl('images/profile_image/thumb'); ?>/<?php echo $member->getProfileImage()?>">  
+
+                    <?
+                    }
+                    ?>
+                
+                </a> 
+            </div>
+            <div class="memb_info left">
+                <a href="<?php echo $this->baseUrl('account/profile'); ?>/<?php echo $member->getUsername()?>"> 
+                    <span class="username"><?php echo $member->getUsername()?></span>
+                </a>
+                <div class="clear"></div>
+                <span>Category : <?php echo $member->getPrimaryCategory()->getCategoryTitle();?></span>
+                <span>Member since : <?php echo date('d M Y',strtotime($member->getCreatedOn()))?></span>
+                <span>Rating : <?php echo $member->getRating()?></span>
+                <span>Projects Complete : <?php echo $member->getUserHired()?></span>
+                <span>Location : <?php //echo getCountryFullName($member->getCountry())?></span>
+            </div>
+            <div class="clear"></div>
+        </div>
+        
+        <?
+            }
+        }
+        ?>                 
+                          
+        <div class="clear"></div>
+        <div class="pagination"></div><!-- END mail_pagination   -->
+
+    </div><!-- END memb_list   -->
+       
+    <div class="clear"></div>
+    <div class="purple_button left">
+        <a href="<?php echo $this->baseUrl('project/project-submit'); ?>">
+            SUBMIT PROJECT<span>Put your project up for bids</span>
+        </a> 
+    </div><!-- END purple_button   -->
+              
+    <div class="blue_button left">
+        <a href="<?php echo $this->baseUrl('member'); ?>">
+            FIND A CREATIVE<span>Find a suitable creative partner</span>
+        </a>
+    </div><!-- END blue_button   -->
+    <div class="green_button left">
+        <a href="<?php echo $this->baseUrl('project/active-project'); ?>">
+            CURRENT PROJECT<span>View all your active projects</span>
+        </a>
+    </div><!-- END green_button   -->
+    <div class="clear"></div>
+</div>
+               
+<?
+} else {
+?>
+
+<center>
+    <div style="height: 300px; color: #2b66c9;">
+        You have no bookmarked members!
+    </div>
+</center>
+<div>
+
+</div>
+
+<?
+}
+?>

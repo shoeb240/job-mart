@@ -1,0 +1,111 @@
+<?
+if ($this->currentHiredMembers) {
+?>
+
+<div class="member_listing" id="container">
+    <div class="main_box left members_list" style="width:100%">
+        <h3 class="left">CURRENT HIRED MEMBERS</h3>
+        
+        <?php echo $this->render('member/member-search-box.phtml');?>
+        
+        <div class="clear"></div>
+        
+        <div class="pagination left">
+            <?php echo $this->pagination?>   
+        </div><!-- END mail_pagination   -->
+        
+        <?php echo $this->partial('member/_member-sort-pagination.phtml', 
+                                  array('action' => 'current-hired-members', 'searchType' => $this->searchType));?>
+        
+        <div class="clear"></div>
+       
+        <?
+        if (!empty($this->currentHiredMembers)) {
+            foreach($this->currentHiredMembers as $projectBid) {
+        ?>
+        
+        <div class="rec_memb_box left" style="width:32%">
+            <div class="foto_box left">
+                <a href="<?php echo $this->baseUrl('account/profile') . '/' . $projectBid->getBidderUser()->getUsername();?>"> 
+                    
+                    <?php
+                    if ($projectBid->getBidderUser()->getProfileImage() == '') {    
+                    ?>
+
+                    <img src="<?php echo $this->baseUrl('images/no_image.png'); ?>" style="height:88px;width:88px;">  
+
+                    <?
+                    } else {
+                    ?>
+
+                    <img style="height:88px;width:88px;" alt="NO IMAGE" 
+                         src="<?php echo $this->baseUrl('images/profile_image/thumb') . '/' . $projectBid->getProfileImage()?>">  
+
+                    <?
+                    }
+                    ?>
+                
+                </a> 
+            </div>
+            <div class="memb_info left">
+                <a href="<?php echo $this->baseUrl('account/profile'); ?>/<?php echo $projectBid->getBidderUser()->getUsername()?>"> 
+                    <span class="username"><?php echo $projectBid->getBidderUser()->getUsername()?></span>
+                </a>
+                <div class="clear"></div>
+                <span>Category : <?php echo $projectBid->getProject()->getPrimaryCategory()->getCategoryTitle();?></span>
+                <span>Member since : <?php echo date('d M Y',strtotime($projectBid->getBidderUser()->getCreatedOn()))?></span>
+                <span>Rating : <?php echo $projectBid->getBidderUser()->getRating()?></span>
+                <span>Projects Complete : <?php echo $projectBid->getBidderUser()->getUserHired()?></span>
+                <span>Location : <?php //echo getCountryFullName($projectBid->getCountry())?></span>
+            </div>
+            <div class="clear"></div>
+        </div>
+        
+        <?
+            }
+        }
+        ?>                 
+                          
+        <div class="clear"></div>
+        <div class="pagination">
+            <?php echo $this->pagination?>   
+        </div><!-- END mail_pagination   -->
+
+    </div><!-- END memb_list   -->
+       
+    <div class="clear"></div>
+    <div class="purple_button left">
+        <a href="<?php echo $this->baseUrl('project/project_submit'); ?>">
+            SUBMIT PROJECT<span>Put your project up for bids</span>
+        </a> 
+    </div><!-- END purple_button   -->
+              
+    <div class="blue_button left">
+        <a href="<?php echo $this->baseUrl('member'); ?>">
+            FIND A CREATIVE<span>Find a suitable creative partner</span>
+        </a>
+    </div><!-- END blue_button   -->
+    <div class="green_button left">
+        <a href="<?php echo $this->baseUrl('project/active-project'); ?>">
+            CURRENT PROJECT<span>View all your active projects</span>
+        </a>
+    </div><!-- END green_button   -->
+    <div class="clear"></div>
+</div> 
+
+<?
+} else {
+?>
+
+<center>
+    <div style="height: 300px; color: #2b66c9;">
+        You have no current hires!
+    </div>
+</center>
+<div>
+
+</div>
+
+<?
+}
+?>
