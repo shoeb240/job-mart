@@ -21,6 +21,11 @@ class Application_Model_FeedbackMapper
         return $this->_dbTable;
     }
     
+    /**
+     * Feedbacks given as project owner or assigned bidder
+     *
+     * @return array
+     */    
     public function getTestimonialsByUserId($userId, $orderType = 'DESC' , $startLimit = 0, $limit = 5)
     {
         $select = $this->getTable()->select();

@@ -20,20 +20,26 @@ class IpnController extends Zend_Controller_Action
      */    
     public function indexAction()
     {
+        // Receive post value from paypal for IPN
         $subscrId = $this->getRequest()->getPost('subscr_id');
         $txnType = $this->getRequest()->getPost('txn_type');
 
         $userMapper = new Application_Model_UserMapper();
         
         if ( $txnType == 'subscr_cancel' || $txnType == 'subscr_failed' || $txnType == 'subscr_eot' ) {
+            // Cancel subscription
             $userMapper->cancelSubscription($subscrId);
         } else {
+            // Receive post value from paypal for IPN
             $paymentStatus = $this->getRequest()->getPost('payment_status');
             $itemName = $this->getRequest()->getPost('item_name');
+            
+            // Extract userId from item_name
             $itemNameArr = explode('__', $itemName);
             $userId = $itemNameArr[0];            
             
             if($paymentStatus == 'Pending' || $paymentStatus == 'Completed' || $txnType == 'subscr_payment') {
+                // On success, update subscription
                 $userMapper->updateSubscription($userId, $subscrId);
             }
         }

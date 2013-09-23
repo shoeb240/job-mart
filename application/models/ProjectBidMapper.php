@@ -213,11 +213,8 @@ class Application_Model_ProjectBidMapper
         
         $row = $this->getTable()->fetchRow($select);
         
-        $projectBid = new Application_Model_ProjectBid();
-        if (!$row) return $projectBid;
-        $projectBid->setBidAmount($row->bid_amount);
-        
-        return $projectBid;
+        if (!$row) return 0;
+        return $row->bid_amount;
     }
     
     public function getCurrentHiredMembers($userId, $searchType = 'newest', $startLimit = 0, $limit = 10)

@@ -276,7 +276,6 @@ class Application_Model_ProjectMapper
                ->group('p.project_id')
                ->order('p.project_id DESC')
                ->limit(4);
-        //echo $select . '<br />';
         $rowSets = $this->getTable()->fetchAll($select);
         
         $info = array();

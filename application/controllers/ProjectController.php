@@ -37,6 +37,7 @@ class ProjectController extends Zend_Controller_Action
     {
         $this->_redirector = $this->_helper->getHelper('Redirector');
         
+        // Initializing session namespaces
         $this->_loginNamespace = new Zend_Session_Namespace('login');
         $this->_messageNamespace = new Zend_Session_Namespace('message');
     }
@@ -48,22 +49,29 @@ class ProjectController extends Zend_Controller_Action
      */    
     public function indexAction()
     {
+        // Get logged in userId
         $sessionUserId = $this->_loginNamespace->session_user_id;
         
+        // Receive searchType filter parameter
         $searchType = $this->getRequest()->getParam('searchType');
         $searchType = $searchType ? $searchType : 'latest';
         $this->view->searchType = $searchType;
         
+        // Prepare pagination info
         $pageNo = $this->_getParam('page');
         if (empty($pageNo)) $pageNo = 1;
         $perPage = 8;
         $startLimit = $perPage*($pageNo-1);
                 
+        // Create model mapper objects
         $projectMapper = new Application_Model_ProjectMapper();
         $userMapper = new Application_Model_UserMapper();
         $primaryCategoryMapper = new Application_Model_PrimaryCategoryMapper();
         
+        // Get premium projects
         $projectListPremium = $projectMapper->getProjectsPremium();
+        
+        // Get total default project count and default projects
         $totalRows = $projectMapper->getProjectsDefaultCount($searchType);
         $projectListDefault = $projectMapper->getProjectsDefault($searchType, $startLimit, $perPage);
         
@@ -83,11 +91,15 @@ class ProjectController extends Zend_Controller_Action
         $this->view->projectListPremium = $projectListPremium;
         $this->view->projectListDefault = $projectListDefault;
 
+        // Get logged in user primary category or set default category
         if ($sessionUserId) {
             $userPrimaryCategoryId = $userMapper->getPrimaryCategoryByUser($sessionUserId);
         } else $userPrimaryCategoryId = 1;
         
+        // Get user primary category name 
         $this->view->categoryName = $primaryCategoryMapper->getPrimaryCategoriyTitle($userPrimaryCategoryId);
+        
+        // Get projects by user primary category
         $this->view->projectsByCategory = $projectMapper->getProjectsByCategory($userPrimaryCategoryId);
         
         // pagination
@@ -104,21 +116,26 @@ class ProjectController extends Zend_Controller_Action
      */    
     public function activeProjectsAction()
     {
+        // Get logged in userId
         $sessionUserId = $this->_loginNamespace->session_user_id;
         
+        // Redirect to login page if user is not logged in
         if (empty($sessionUserId)) {
             $this->_redirector->gotoSimple('login', 'index');
         }
         
+        // Receive searchType filter parameter
         $searchType = $this->getRequest()->getParam('searchType');
         $searchType = $searchType ? $searchType : 'latest';
         $this->view->searchType = $searchType;
         
+        // Prepare pagination info
         $pageNo = $this->_getParam('page');
         if (empty($pageNo)) $pageNo = 1;
         $perPage = 8;
         $startLimit = $perPage*($pageNo-1);
         
+        // Get total active project count and active projects
         $projectMapper = new Application_Model_ProjectMapper();
         $totalRows = $projectMapper->getActiveProjectsCount($sessionUserId);
         $activeProjects = $projectMapper->getActiveProjects($sessionUserId, $searchType, $startLimit, $perPage);
@@ -148,21 +165,26 @@ class ProjectController extends Zend_Controller_Action
      */    
     public function biddedProjectsAction()
     {
+        // Get logged in userId
         $sessionUserId = $this->_loginNamespace->session_user_id;
         
+        // Redirect to login page if user is not logged in
         if (empty($sessionUserId)) {
             $this->_redirector->gotoSimple('login', 'index');
         }
         
+        // Receive searchType filter parameter
         $searchType = $this->getRequest()->getParam('searchType');
         $searchType = $searchType ? $searchType : 'latest';
         $this->view->searchType = $searchType;
         
+        // Prepare pagination info
         $pageNo = $this->_getParam('page');
         if (empty($pageNo)) $pageNo = 1;
         $perPage = 3;
         $startLimit = $perPage*($pageNo-1);
         
+        // Get total bidded project count and bidded projects
         $projectMapper = new Application_Model_ProjectMapper();
         $totalRows = $projectMapper->getBiddedProjectsCount($sessionUserId);
         $biddedProjects = $projectMapper->getBiddedProjects($sessionUserId, $searchType, $startLimit, $perPage);
@@ -192,21 +214,26 @@ class ProjectController extends Zend_Controller_Action
      */    
     public function archiveProjectsAction()
     {
+        // Get logged in userId
         $sessionUserId = $this->_loginNamespace->session_user_id;
         
+        // Redirect to login page if user is not logged in
         if (empty($sessionUserId)) {
             $this->_redirector->gotoSimple('login', 'index');
         }
         
+        // Receive searchType filter parameter
         $searchType = $this->getRequest()->getParam('searchType');
         $searchType = $searchType ? $searchType : 'latest';
         $this->view->searchType = $searchType;
         
+        // Prepare pagination info
         $pageNo = $this->_getParam('page');
         if (empty($pageNo)) $pageNo = 1;
         $perPage = 8;
         $startLimit = $perPage*($pageNo-1);
         
+        // Gte total archive project count and archive projects
         $projectMapper = new Application_Model_ProjectMapper();
         $totalRows = $projectMapper->getArchiveProjectsCount($sessionUserId);
         $archiveProjects = $projectMapper->getArchiveProjects($sessionUserId, $searchType, $startLimit, $perPage);
@@ -236,20 +263,25 @@ class ProjectController extends Zend_Controller_Action
      */    
     public function archiveBiddedProjectsAction()
     {
+        // Get logged in userId
         $sessionUserId = $this->_loginNamespace->session_user_id;
         
+        // Redirect to login page if user is not logged in
         if (empty($sessionUserId)) {
             $this->_redirector->gotoSimple('login', 'index');
         }
         
+        // Receive searchType filter parameter
         $searchType = $this->getRequest()->getParam('searchType');
         $this->view->searchType = $searchType;
         
+        // Prepare pagination info
         $pageNo = $this->_getParam('page');
         if (empty($pageNo)) $pageNo = 1;
         $perPage = 8;
         $startLimit = $perPage*($pageNo-1);
         
+        // Get total archive bidded project count and archive bidded projects
         $projectMapper = new Application_Model_ProjectMapper();
         $totalRows = $projectMapper->getArchiveBiddedProjectsCount($sessionUserId);
         $archiveBiddedProjects = $projectMapper->getArchiveBiddedProjects($sessionUserId, $searchType, $startLimit, $perPage);
@@ -279,34 +311,38 @@ class ProjectController extends Zend_Controller_Action
      */    
     public function projectDetailsAction()
     {
+        // Receive projectId parameter
         $projectId = $this->getRequest()->getParam('projectId');
         
+        // Redirect to project page if projectId is not provided
         if (empty($projectId)) {
             $this->_redirector->gotoSimple('index', 'project');
         }
         
+        // Get success messages from session for view part and then unset
         $this->view->message = $this->_messageNamespace->message;
         unset($this->_messageNamespace->message);
         
+        // Get logged in userId
         $sessionUserId = $this->_loginNamespace->session_user_id;
 
-        // Fetching project details as Project object
+        // Fetch project details as Project object
         $projectMapper = new Application_Model_ProjectMapper();
         $this->view->projectDetails = $projectMapper->getProjectDetails($projectId);
 
-        // Detecting if logged in user is the owner of the project
+        // Detect if logged in user is the owner of the project
         $this->view->isProjectOwner = $this->view->projectDetails->getUserId() == $sessionUserId ? true : false;
 
-        // Fetching project attachments as ProjectAttachment object
+        // Fetch project attachments as ProjectAttachment object
         $projectAttachmentMapper = new Application_Model_ProjectAttachmentMapper();
         $this->view->projectAttachments = $projectAttachmentMapper->getProjectAttachments($projectId);
         
         $projectBidMapper = new Application_Model_ProjectBidMapper();
         
-        // Fetcing assigned bid ProjectBid objects
+        // Fetch assigned bid ProjectBid objects
         $this->view->assignedBid = $assignedBid = $projectBidMapper->getAssignedBid($projectId);
         
-        // Fetcing all bids of the project as ProjectBid objects
+        // Fetch all bids of the project as ProjectBid objects
         $this->view->projectBids = $projectBidMapper->getProjectBids($projectId);
 
         if ($sessionUserId) {
@@ -314,13 +350,13 @@ class ProjectController extends Zend_Controller_Action
             $this->view->bidNumberCount = $projectBidMapper->getBidNumberCount($sessionUserId);
         }
         $assignedBidderUserId = $assignedBid->getBidderUserId();
-        // Detecting if the project is assignd to any bidder
+        // Detect if the project is assignd to any bidder
         $this->view->isProjectAssigned = !empty($assignedBidderUserId) ? true : false;
         
-        // Detecting if the project accepted or declined
+        // Detect if the project accepted or declined
         $this->view->afterProjectAccept = $this->view->assignedBid->getAcceptDecline() ? true : false; // need query
 
-        // Detecting if the logged in user is a bidder of hte project
+        // Detect if the logged in user is a bidder of hte project
         $this->view->isCurrentUserBidder = false;
         if ($sessionUserId) {
             foreach($this->view->projectBids as $bid) {
@@ -330,12 +366,12 @@ class ProjectController extends Zend_Controller_Action
                  }
             }
             
-            // Checking if the logged in user is a paid member
+            // Check if the logged in user is a paid member
             $paymentRecordMapper = new Application_Model_PaymentRecordMapper();
             $this->view->paymentCheck = $paymentRecordMapper->checkPayment($sessionUserId);
         }
         
-        // Per onth bid quota
+        // Per month bid quota
         $this->view->bidNumberPerMonth = Zend_Registry::get('bidNumberPerMonth');
         
     }
@@ -349,18 +385,23 @@ class ProjectController extends Zend_Controller_Action
      */    
     public function assignProjectAction()
     {
+        // Get logged in userId
         $projectOwnerUserId = $this->_loginNamespace->session_user_id;
         
+        // Disable layout and stop view rendering
         $this->_helper->layout->disableLayout();
         $this->_helper->viewRenderer->setNoRender(true);
         
+        // Receive projectId and bidderUserId parameters
         $projectId = $this->getRequest()->getUserParam('projectId');
         $bidderUserId = $this->getRequest()->getUserParam('bidderUserId');
         
+        // Creating mapper objects
         $projectBidMapper = new Application_Model_ProjectBidMapper();
         $projectMapper = new Application_Model_ProjectMapper();
         $messageMapper = new Application_Model_MessageMapper();
         
+        // Prepare message object to use in model
         $message = new Application_Model_Message();
         $message->setProjectId($projectId);
         $message->setSenderUserId($projectOwnerUserId);
@@ -369,24 +410,31 @@ class ProjectController extends Zend_Controller_Action
                            . '<a href="' . $this->view->baseUrl('project/project-details')
                            . '/' . $projectId.'/">click here</a> to see details.');
         
+        // Begin sql transaction to keep updates stable
         $bootstrap = $this->getInvokeArg('bootstrap');
         $bootstrap->bootstrap('db');
         $db = $bootstrap->getResource('db');
         $db->beginTransaction();
         
         try {
+            // Update bid status to assigned
             $projectBidMapper->updateBidAssigned($projectId, $bidderUserId);
+            // Update project to frozen
             $projectMapper->updateProjectFrozen($projectId);
+            // Save project message
             $messageMapper->saveMessage($message);
+            // Commit all updates
             $db->commit();
         } catch (Exception $e) {
+            // Rollback updates on failure
             $db->rollBack();
-            echo $e->getMessage();
+            //echo $e->getMessage();
         }
         
         // Need to send email       
         $projectUserBid = $projectBidMapper->getProjectUserBid($projectId, $bidderUserId);
         
+        // Redirect to project details page
         $this->_redirector->gotoRoute(array('projectId' => $projectId), 'projectDetails');
     }
     
@@ -399,42 +447,52 @@ class ProjectController extends Zend_Controller_Action
      */    
     public function acceptProjectAction()
     {
+        // Get logged in userId and username
         $sessionUserId = $this->_loginNamespace->session_user_id;
-        $sessionUserName = $this->_loginNamespace->user_username;
+        $sessionUserName = $this->_loginNamespace->session_username;
         
+        // Disable layout and stop view rendering
         $this->_helper->layout->disableLayout();
         $this->_helper->viewRenderer->setNoRender(true);
         
+        // Receive projectId and bidderUserId parameters
         $projectId = $this->getRequest()->getUserParam('projectId');
         $bidderUserId = $this->getRequest()->getUserParam('bidderUserId');
         
+        // If logged in user is not the bidder, stop him
         if ( $sessionUserId != $bidderUserId ) die('Hacking attempt');
         
+        // Create mapper objects
         $projectBidMapper = new Application_Model_ProjectBidMapper();
         $projectMapper = new Application_Model_ProjectMapper();
         $messageMapper = new Application_Model_MessageMapper();
         $creditBalanceMapper = new Application_Model_CreditBalanceMapper();
         
+        // Get project and project owner info
         $project = $projectMapper->getProject($projectId);
         
+        // Get bidder bid amount
         $projectUserBidAmount = $projectBidMapper->getProjectUserBidAmount($projectId, $bidderUserId);
         
+        // Prepare credit balance object of project owner
         $creditBalanceOwner = new Application_Model_CreditBalance();
         $creditBalanceOwner->setUserId($bidderUserId);
         $creditBalanceOwner->setTransactionForUserId($project->getProjectOwner()->getUserId());
         $creditBalanceOwner->setCreatedOn(date('Y-m-d H:i:s', time()));
         $creditBalanceOwner->setType('earned');
-        $creditBalanceOwner->setBalance($projectUserBidAmount->getBidAmount());
+        $creditBalanceOwner->setBalance($projectUserBidAmount);
         $creditBalanceOwner->setStatus(1);
         
+        // Prepare credit balance object of bidder
         $creditBalanceBidder = new Application_Model_CreditBalance();
         $creditBalanceBidder->setUserId($project->getProjectOwner()->getUserId());
         $creditBalanceBidder->setTransactionForUserId($bidderUserId);
         $creditBalanceBidder->setCreatedOn(date('Y-m-d H:i:s', time()));
         $creditBalanceBidder->setType('spend');
-        $creditBalanceBidder->setBalance($projectUserBidAmount->getBidAmount());
+        $creditBalanceBidder->setBalance($projectUserBidAmount);
         $creditBalanceBidder->setStatus(1);
         
+        // Prepare message object
         $message = new Application_Model_Message();
         $message->setProjectId($projectId);
         $message->setSenderUserId($bidderUserId);
@@ -444,23 +502,32 @@ class ProjectController extends Zend_Controller_Action
                            . '<a href="' . $this->view->baseUrl('project/project-details') . '/' 
                            . $projectId . '/">click here</a>');
         
+        // Begin sql transaction to keep updates stable
         $bootstrap = $this->getInvokeArg('bootstrap');
         $bootstrap->bootstrap('db');
         $db = $bootstrap->getResource('db');
         $db->beginTransaction();
         
         try {
+            // Update bid status to accepted
             $projectBidMapper->setBidAcceptDecline($projectId, $bidderUserId);
+            // Update project status to closed
             $projectMapper->updateProjectClose($projectId, $bidderUserId);
+            // Save project owner credit balance info
             $creditBalanceMapper->saveCreditBalance($creditBalanceOwner);
+            // Save bidder credit balance info
             $creditBalanceMapper->saveCreditBalance($creditBalanceBidder);
+            // Save message
             $messageMapper->saveMessage($message);
+            // Commit all updates
             $db->commit();
         } catch (Exception $e) {
+            // Rollback updates on failure
             $db->rollBack();
             echo $e->getMessage();
         }
         
+        // Redirect to project details page
         $this->_redirector->gotoRoute(array('projectId' => $projectId), 'projectDetails');
     }
     
@@ -473,26 +540,30 @@ class ProjectController extends Zend_Controller_Action
      */    
     public function declineProjectAction()
     {
+        // Get logged in userId and username
         $sessionUserId = $this->_loginNamespace->session_user_id;
-        $sessionUserName = $this->_loginNamespace->user_username;
+        $sessionUserName = $this->_loginNamespace->session_username;
         
+        // Disable layout and stop view rendering
         $this->_helper->layout->disableLayout();
         $this->_helper->viewRenderer->setNoRender(true);
         
+        // Receive projectId and bidderUserId parameters
         $projectId = $this->getRequest()->getUserParam('projectId');
         $bidderUserId = $this->getRequest()->getUserParam('bidderUserId');
         
+        // If logged in user is not the bidder, stop him
         if ( $sessionUserId != $bidderUserId ) die('Hacking attempt');
         
+        // Create mapper objects
         $projectBidMapper = new Application_Model_ProjectBidMapper();
         $projectMapper = new Application_Model_ProjectMapper();
         $messageMapper = new Application_Model_MessageMapper();
-        $creditBalanceMapper = new Application_Model_CreditBalanceMapper();
         
+        // Get project and project owner info
         $project = $projectMapper->getProject($projectId);
         
-        $projectUserBidAmount = $projectBidMapper->getProjectUserBidAmount($projectId, $bidderUserId);
-        
+        // Prepare message object
         $message = new Application_Model_Message();
         $message->setProjectId($projectId);
         $message->setSenderUserId($bidderUserId);
@@ -502,21 +573,28 @@ class ProjectController extends Zend_Controller_Action
                            . '<a href="' . $this->view->baseUrl('project/project-details') . '/' 
                            . $projectId.'/">click here</a>');
         
+        // Begin sql transaction to keep updates stable
         $bootstrap = $this->getInvokeArg('bootstrap');
         $bootstrap->bootstrap('db');
         $db = $bootstrap->getResource('db');
         $db->beginTransaction();
         
         try {
+            // Reset bid assignment and set decline
             $projectBidMapper->unsetBidAcceptDecline($projectId, $bidderUserId);
+            // Update project status to open
             $projectMapper->updateProjectOpen($projectId);
+            // Save message
             $messageMapper->saveMessage($message);
+            // Commit updates
             $db->commit();
         } catch (Exception $e) {
+            // Rollback updates on failure
             $db->rollBack();
             echo $e->getMessage();
         }
         
+        // Redirect to project details page
         $this->_redirector->gotoRoute(array('projectId' => $projectId), 'projectDetails');
     }
     
@@ -529,14 +607,18 @@ class ProjectController extends Zend_Controller_Action
      */    
     public function cancelProjectAction()
     {
+        // Disable layout and stop view rendering
         $this->_helper->layout->disableLayout();
         $this->_helper->viewRenderer->setNoRender(true);
         
+        // Receive projectId parameters
         $projectId = $this->getRequest()->getUserParam('projectId');
         
+        // Update project status to cancel
         $projectMapper = new Application_Model_ProjectMapper();
         $projectMapper->updateProjectCancel($projectId);
         
+        // Redirect to project page
         $this->_redirector->gotoSimple('index', 'project');
     }
 
@@ -549,16 +631,21 @@ class ProjectController extends Zend_Controller_Action
      */    
     public function deleteBidAction()
     {
+        // Get logged in userId
         $sessionUserId = $this->_loginNamespace->session_user_id;
         
+        // Disable layout and stop view rendering
         $this->_helper->layout->disableLayout();
         $this->_helper->viewRenderer->setNoRender(true);
         
+        // Receive projectId parameters
         $projectId = $this->getRequest()->getUserParam('projectId');
         
+        // Set bid status to deleted
         $projectBidMapper = new Application_Model_ProjectBidMapper();
         $projectBidMapper->setBidDeleted($projectId, $sessionUserId);
         
+        // Redirect to project deyails page
         $this->_redirector->gotoRoute(array('projectId' => $projectId), 'projectDetails');
     }
 
@@ -570,9 +657,11 @@ class ProjectController extends Zend_Controller_Action
      */    
     public function projectBidPayment()
     {
+        // Disable layout and stop view rendering
         $this->_helper->layout->disableLayout();
         $this->_helper->viewRenderer->setNoRender(true);
         
+        // Receive projectId and bidderUserId parameters
         $projectId = $this->getRequest()->getUserParam('projectId');
         $paymentCheck = $this->getRequest()->getUserParam('paymentCheck');
         
@@ -595,17 +684,21 @@ class ProjectController extends Zend_Controller_Action
      */    
     public function ownerRatingAction()
     {
+        // Get logged in userId and username
         $sessionUserId = $this->_loginNamespace->session_user_id;
+        $this->view->sessionUsername = $this->_loginNamespace->session_username;
+        
+        // Redirect to login page if user is not logged in
         if (empty($sessionUserId)) {
             $this->_redirector->gotoSimple('login', 'index');
         }
         
-        $this->view->sessionUsername = $this->_loginNamespace->user_username;
-        
+        // Receive projectId and bidderUserId parameters
         $projectId = $this->getRequest()->getUserParam('projectId');
         $this->view->projectId = $projectId;
         $this->view->bidderUserId = $this->getRequest()->getUserParam('bidderUserId');
         
+        // Get project assigned user info
         $projectMapper = new Application_Model_ProjectMapper();
         $this->view->projectAssignedUser = $projectMapper->getProjectAssignedUser($projectId);
     }
@@ -617,19 +710,23 @@ class ProjectController extends Zend_Controller_Action
      */    
     public function bidderRatingAction()
     {
+        // Get logged in userId and username
         $sessionUserId = $this->_loginNamespace->session_user_id;
+        $this->view->sessionUsername = $this->_loginNamespace->session_username;
+        
+        // Redirect to login page if user is not logged in
         if (empty($sessionUserId)) {
             $this->_redirector->gotoSimple('login', 'index');
         }
         
-        $this->view->sessionUsername = $this->_loginNamespace->user_username;
-        
+        // Receive projectId and bidderUserId parameters
         $projectId = $this->getRequest()->getUserParam('projectId');
         $this->view->projectId = $projectId;
         $this->view->ownerUserId = $this->getRequest()->getUserParam('ownerUserId');
         
+        // Get project and project owner info
         $projectMapper = new Application_Model_ProjectMapper();
-        $this->view->projectAssignedUser = $projectMapper->getProject($projectId);
+        $this->view->projectOwnerUser = $projectMapper->getProject($projectId);
     }
 
     /**
@@ -639,19 +736,25 @@ class ProjectController extends Zend_Controller_Action
      */    
     public function saveOwnerRatingAction()
     {
+        // Get logged in userId
         $sessionUserId = $this->_loginNamespace->session_user_id;
+        
+        // Redirect to login page if user is not logged in
         if (empty($sessionUserId)) {
             $this->_redirector->gotoSimple('login', 'index');
         }
         
+        // Stop view rendering
         $this->_helper->viewRenderer->setNoRender(true);
         
+        // Receive rating post values
         $projectId = $this->getRequest()->getPost('project_id');
         $bidderUserId = $this->getRequest()->getPost('BIDDER_user_id');
         $rating = $this->getRequest()->getPost('rating');
         $comment = $this->getRequest()->getPost('comment');
         $postDate = date('Y-m-d H:i:s',time());
         
+        // Prepare feedback object for model
         $feedback = new Application_Model_Feedback();
         $feedback->setProjectId($projectId);
         $feedback->setOwnerUserId($sessionUserId);
@@ -661,15 +764,19 @@ class ProjectController extends Zend_Controller_Action
         $feedback->setOwnerPostDate($postDate);
         $feedback->setStatus(2);
         
+        // Update project owner feedback if bidder feedback was given previously
         $feedbackMapper = new Application_Model_FeedbackMapper();
         $success = $feedbackMapper->updateOwnerFeedback($feedback);
         if ($success) {
+            // Set project as archived after both owner and bidder feedback is given
             $projectMapper = new Application_Model_ProjectMapper();
             $projectMapper->updateProjectArchive($projectId);
         } else {
+            // Insert owner feedback
             $feedbackMapper->saveOwnerFeedback($feedback);
         }
         
+        // Get project bidder and project info
         $projectBidMapper = new Application_Model_ProjectBidMapper();
         $projectUserBid = $projectBidMapper->getProjectUserBid($projectId, $bidderUserId);
         
@@ -677,6 +784,7 @@ class ProjectController extends Zend_Controller_Action
         
         // TODO: email work
         
+        // Prepare message
         $message = new Application_Model_Message();
         $message->setProjectId($projectId);
         $message->setSenderUserId($sessionUserId);
@@ -684,9 +792,11 @@ class ProjectController extends Zend_Controller_Action
         $message->setSubject($subject);
         $message->setMessage("3lance / " . $sessionUserId . " has written a testimonial on the project " . $projectUserBid->getProject()->getProjectTitle() . "");
         
+        // Save message
         $messageMapper = new Application_Model_MessageMapper();
         $messageMapper->saveMessage($message);
         
+        // Redirect to active-projects page
         $this->_redirector->gotoRoute(array('searchType' => 'latest'), 'activeProjects');
     }
 
@@ -697,19 +807,25 @@ class ProjectController extends Zend_Controller_Action
      */    
     public function saveBidderRatingAction()
     {
+        // Get logged in userId
         $sessionUserId = $this->_loginNamespace->session_user_id;
+        
+        // Redirect to login page if user is not logged in
         if (empty($sessionUserId)) {
             $this->_redirector->gotoSimple('login', 'index');
         }
         
+        // Stop view rendering
         $this->_helper->viewRenderer->setNoRender(true);
         
+        // Receive rating post values
         $projectId = $this->getRequest()->getPost('project_id');
         $ownerUserId = $this->getRequest()->getPost('owner_user_id');
         $rating = $this->getRequest()->getPost('rating');
         $comment = $this->getRequest()->getPost('comment');
         $postDate = date('Y-m-d H:i:s',time());
         
+        // Prepare bidder feedback
         $feedback = new Application_Model_Feedback();
         $feedback->setProjectId($projectId);
         $feedback->setOwnerUserId($ownerUserId);
@@ -719,15 +835,19 @@ class ProjectController extends Zend_Controller_Action
         $feedback->setBidderPostDate($postDate);
         $feedback->setStatus(2);
         
+        // Update assigned bidded feedback if project owner feedback was given previously
         $feedbackMapper = new Application_Model_FeedbackMapper();
         $success = $feedbackMapper->updateBidderFeedback($feedback);
         if ($success) {
+            // Set project as archived after both owner and bidder feedback is given
             $projectMapper = new Application_Model_ProjectMapper();
             $projectMapper->updateProjectArchive($projectId);
         } else {
+            // Insert bidder feedback
             $feedbackMapper->saveBidderFeedback($feedback);
         }
         
+        // Get project owner and project info
         $projectMapper = new Application_Model_ProjectMapper();
         $projectUser = $projectMapper->getProject($projectId);
         
@@ -735,6 +855,7 @@ class ProjectController extends Zend_Controller_Action
         
         // TODO: email work
         
+        // Prepare message
         $message = new Application_Model_Message();
         $message->setProjectId($projectId);
         $message->setSenderUserId($sessionUserId);
@@ -742,9 +863,11 @@ class ProjectController extends Zend_Controller_Action
         $message->setSubject($subject);
         $message->setMessage("3lance / " . $sessionUserId . " has written a testimonial on the project " . $projectUser->getProjectTitle() . "");
         
+        // Save message
         $messageMapper = new Application_Model_MessageMapper();
         $messageMapper->saveMessage($message);
         
+        // Redirect to bidded-projects page
         $this->_redirector->gotoRoute(array('searchType' => 'latest'), 'biddedProjects');
     }
 
@@ -755,14 +878,18 @@ class ProjectController extends Zend_Controller_Action
      */    
     public function feedbacksByMeAction()
     {
-        $sessionUserId = $this->_loginNamespace->session_user_id;
-        $this->view->sessionUserId = $sessionUserId;
+        // Get logged in userId
+        $this->view->sessionUserId = $sessionUserId = $this->_loginNamespace->session_user_id;
+        
+        // Redirect to login page if user is not logged in
         if (empty($sessionUserId)) {
             $this->_redirector->gotoSimple('login', 'index');
         }
         
+        // Receive searchType parameters
         $searchType = $this->getRequest()->getParam('searchType');
         
+        // Prepare pagination info
         $pageNo = $this->_getParam('page');
         if (empty($pageNo)) $pageNo = 1;
         $perPage = 8;
@@ -770,10 +897,12 @@ class ProjectController extends Zend_Controller_Action
         
         $userMapper = new Application_Model_UserMapper();
         
+        // Get total feedback count and feedbacks by logged in user both as bidder and project owner
         $feedbackMapper = new Application_Model_FeedbackMapper();
         $totalRows = $feedbackMapper->getFeedbacksByMeCount($sessionUserId);
         $this->view->givenFeedbacks = $feedbackMapper->getFeedbacksByMe($sessionUserId, $searchType, $startLimit, $perPage);
         
+        // Assign feedback writer username in a array to retrieve using userId 
         $userFeedbacks = array();
         foreach($this->view->givenFeedbacks as $testimonial) {
             if($testimonial->getOwnerUserId() == $sessionUserId) { 
@@ -800,14 +929,18 @@ class ProjectController extends Zend_Controller_Action
      */    
     public function feedbacksForMeAction()
     {
-        $sessionUserId = $this->_loginNamespace->session_user_id;
-        $this->view->sessionUserId = $sessionUserId;
+        // Get logged in userId
+        $this->view->sessionUserId = $sessionUserId = $this->_loginNamespace->session_user_id;
+        
+        // Redirect to login page if user is not logged in
         if (empty($sessionUserId)) {
             $this->_redirector->gotoSimple('login', 'index');
         }
         
+        // Receive searchType parameters
         $searchType = $this->getRequest()->getParam('searchType');
         
+        // Prepare info for pagination
         $pageNo = $this->_getParam('page');
         if (empty($pageNo)) $pageNo = 1;
         $perPage = 8;
@@ -815,10 +948,12 @@ class ProjectController extends Zend_Controller_Action
         
         $userMapper = new Application_Model_UserMapper();
         
+        // Get total feedback count and feedbacks for logged in user both as bidder and project owner
         $feedbackMapper = new Application_Model_FeedbackMapper();
         $totalRows = $feedbackMapper->getFeedbacksForMeCount($sessionUserId);
         $this->view->givenFeedbacks = $feedbackMapper->getFeedbacksForMe($sessionUserId, $searchType, $startLimit, $perPage);
         
+        // Assign feedback writer username in a array to retrieve using userId 
         $userFeedbacks = array();
         foreach($this->view->givenFeedbacks as $testimonial) {
             if($testimonial->getOwnerUserId() == $sessionUserId) { 
@@ -860,25 +995,37 @@ class ProjectController extends Zend_Controller_Action
      */    
     public function projectSubmitAction()
     {
+        // Get logged in userId
         $sessionUserId = $this->_loginNamespace->session_user_id;
+        
+        // Redirect to login page if user is not logged in
         if (empty($sessionUserId)) {
             $this->_redirector->gotoSimple('login', 'index');
         }
         
+        // Get project primary categories
         $primaryCategoryMapper = new Application_Model_PrimaryCategoryMapper();
         $primaryCategories = $primaryCategoryMapper->getPrimaryCategories();
         
+        // Create form, My_Form_JobPost to post project/job
         $params['primaryCategories'] = $primaryCategories;
-        
         $form = $this->getJobPostForm($params);
         
         if ($this->getRequest()->isPost()) {
             if (!$form->isValid($_POST)) {
+                // Retrieve form error messages and prepare for view part
                 $errors = $form->getMessages();
-                $this->view->error = implode(' ', $errors);
-            } else $this->_forward('project-submit-preview');
+                $this->view->error = '';
+                foreach ($errors as $field => $fieldErrors) {
+                    $this->view->error .= $field . ': ' . implode(' ', $fieldErrors) . '<br />';
+                }
+            } else {
+                // On successful form validation forward to project-submit-preview
+                $this->_forward('project-submit-preview');
+            }
         }        
         
+        // Assign form to view part
         $this->view->form = $form;
     }
 
@@ -901,21 +1048,28 @@ class ProjectController extends Zend_Controller_Action
      */    
     public function projectSubmitPreviewAction()
     {
+        // Get logged in userId
         $sessionUserId = $this->_loginNamespace->session_user_id;
+        
+        // Redirect to login page if user is not logged in
         if (empty($sessionUserId)) {
             $this->_redirector->gotoSimple('login', 'index');
         }
         
+        // Redirect to project-submit page user have not post project submit form
         if (!$this->getRequest()->isPost()) {
             $this->_redirector->gotoSimple('project-submit', 'project');
         }
         
+        // Receive additional info check boxes input
         $additionalInfo = $this->getRequest()->getPost('additional_info');
         $meetUpRequired = in_array('Meet up required', $additionalInfo) ? 1 : 0;
         $milestonePayments = in_array('Milestone payments', $additionalInfo) ? 1 : 0;
         $requirePortfolio = in_array('Require portfolio', $additionalInfo) ? 1 : 0;
+        // Receive and format bid_ending_date
         $bidEndingDate = date('Y-m-d, H:i:s',strtotime($this->getRequest()->getPost('bid_ending_date')));
 
+        // Prepare project info for model
         $project = new Application_Model_Project();
         $project->setUserId($sessionUserId);
         $project->setCurrencyCode($this->getRequest()->getPost('CurrencyCode')); 
@@ -931,25 +1085,31 @@ class ProjectController extends Zend_Controller_Action
         $project->setStatus(1); 
         $project->setCreatedOn(date('Y-m-d, H:i:s',time())); 
         
+        // Save project to temporary table
         $temporaryProjectMapper = new Application_Model_TemporaryProjectMapper();
         $temporaryProjectId = $temporaryProjectMapper->saveProject($project);
         
+        // Prepare project attachment to temporary table
         $projectAttachment = new Application_Model_ProjectAttachment();
         $projectAttachment->setProjectId($temporaryProjectId);
         $projectAttachment->setAttachment($this->getRequest()->getPost('attach1'));
         
+        // Save project attachment
         $temporaryProjectAttachmentMapper = new Application_Model_TemporaryProjectAttachmentMapper();
         $temporaryProjectAttachmentMapper->saveProjectAttachment($projectAttachment);
         
+        // Assign project and project attachment info for view part
         $this->view->project = $project;
         $this->view->projectAttachment = $projectAttachment;
         
+        // Create and populate job confirm form, My_Form_JobConfirm
         $form = $this->getJobConfirmForm();
         $this->view->form = $form;
         $data = array();
         $data['project_id'] = $temporaryProjectId;
         $form->populate($data);
         
+        // Get project primary categoriy title
         $primaryCategoryMapper = new Application_Model_PrimaryCategoryMapper();
         $this->view->primaryCategoriyTitle = $primaryCategoryMapper->getPrimaryCategoriyTitle($project->getProjectCategoryId());
         
@@ -962,32 +1122,43 @@ class ProjectController extends Zend_Controller_Action
      */    
     public function projectSubmitConfirmAction()
     {
+        // Get logged in userId
         $sessionUserId = $this->_loginNamespace->session_user_id;
+        
+        // Redirect to login page if user is not logged in
         if (empty($sessionUserId)) {
             $this->_redirector->gotoSimple('login', 'index');
         }
         
+         // Redirect to project-submit page user have not post project submit form
         if (!$this->getRequest()->isPost()) {
             $this->_redirector->gotoSimple('project-submit', 'project');
         }
         
+        // Receive project_id post value
         $temporaryProjectId = $this->getRequest()->getPost('project_id');
 
+        // Get project from temporary table to save
         $temporaryProjectMapper = new Application_Model_TemporaryProjectMapper();
         $project = $temporaryProjectMapper->getProject($temporaryProjectId);
+        
+        // Save project to main table
         $projectMapper = new Application_Model_ProjectMapper();
         $projectId = $projectMapper->saveProject($project);
         
+        // Get project attachment from temporary table
         $temporaryProjectAttachmentMapper = new Application_Model_TemporaryProjectAttachmentMapper();
         $projectAttachments = $temporaryProjectAttachmentMapper->getProjectAttachments($temporaryProjectId);
+        
+        // Save project attachment to main table
         $projectAttachmentMapper = new Application_Model_ProjectAttachmentMapper();
         foreach($projectAttachments AS $projectAttachment) {
             $projectAttachment->setProjectId($projectId);
             $projectAttachmentMapper->saveProjectAttachment($projectAttachment);
         }
         
-        $this->_forward('invite-member', null, null, array('projectId' => $projectId));
-        
+        // Redirect to invite-member page
+        $this->_forward('invite-member', null, null, array('projectId' => $projectId));        
     }
     
     /**
@@ -1011,36 +1182,41 @@ class ProjectController extends Zend_Controller_Action
      */    
     public function projectBidAction()
     {
+        // Get logged in userId
         $sessionUserId = $this->_loginNamespace->session_user_id;
+        
+        // Redirect to login page if user is not logged in 
         if (empty($sessionUserId)) {
             $this->_redirector->gotoSimple('login', 'index');
         }
         
+        // Receive projectId parameters
         $projectId = $this->getRequest()->getParam('projectId');
         if (empty($projectId)) {
             $this->_redirector->gotoSimple('index', 'project');
         }
         
-        //$project = new Zend_Session_Namespace('project');
-        //$project->bidProjectId = $project;
-        
+        // Get project owner and project info
         $projectMapper = new Application_Model_ProjectMapper();
         $this->view->projectInfo = $projectMapper->getProject($projectId);
         
+        // Create project bid form, My_Form_ProjectBid
         $params['projectId'] = $projectId;
-        
         $form = $this->getProjectBidForm($params);
         
         if ($this->getRequest()->isPost()) {
             if (!$form->isValid($_POST)) {
+                // Retrieve form error messages and prepare for view part
                 $errors = $form->getMessages();
                 $this->view->error = '';
                 foreach ($errors as $field => $fieldErrors) {
                     $this->view->error .= $field . ': ' . implode(' ', $fieldErrors) . '<br />';
                 }
             } else {
+                // Receive projectId post value
                 $projectId = $this->getRequest()->getPost('projectId');
                 
+                // Prepare project bid info for model
                 $projectBid = new Application_Model_ProjectBid();
                 $projectBid->setProjectId($projectId);
                 $projectBid->setBidderUserId($sessionUserId); 
@@ -1049,9 +1225,11 @@ class ProjectController extends Zend_Controller_Action
                 $projectBid->setStatus(1);
                 $projectBid->setCreatedOn(date('Y-m-d, H:i:s',time())); 
 
+                // Save project bid info
                 $projectBidMapper = new Application_Model_ProjectBidMapper();
                 $projectBidId = $projectBidMapper->saveProjectBid($projectBid);
                 
+                // Prepare project bid attachment info
                 $projectBidAttach = new Application_Model_ProjectBidAttach();
                 $projectBidAttach->setProjectId($projectId);
                 $projectBidAttach->setBidderUserId($sessionUserId); 
@@ -1059,10 +1237,14 @@ class ProjectController extends Zend_Controller_Action
                 $projectBidAttach->setStatus(1);
                 $projectBidAttach->setCreatedOn(date('Y-m-d, H:i:s',time())); 
                 
+                // Save project attachment
                 $projectBidAttachMapper = new Application_Model_ProjectBidAttachMapper();
                 $projectBidAttachMapper->saveProjectBidAttach($projectBidAttach);
                 
+                // Assign success message to session namespace
                 $this->_messageNamespace->message = 'Your bid has been submitted successfully.';
+                
+                // redirect to project-details page
                 $this->_redirector->gotoRoute(array('projectId' => $projectId), 'projectDetails');
             }
         }        
@@ -1077,32 +1259,41 @@ class ProjectController extends Zend_Controller_Action
      */    
     public function inviteMemberAction()
     {
-        try {
+        // Receive projectId parameter
         $this->view->projectId = $projectId = $this->getRequest()->getParam('projectId');
-        $this->view->message = $this->_messageNamespace->message;
-        unset($this->_messageNamespace->message);
         
+        // Get success message from session for view part and then unset
+        if ($this->_messageNamespace->message) {
+            $this->view->message = $this->_messageNamespace->message;
+            unset($this->_messageNamespace->message);
+        }
+        
+        // Get invited member count to bid on this project
         $invitedMapper = new Application_Model_InvitedMapper();
         $this->view->invitedMemberCount = $invitedMapper->getInvitedMemberCount($projectId)+1;
         
+        // Receive userId parameter
         $userId = $this->getRequest()->getParam('userId');  
 
         if (!empty($projectId) && !empty($userId) 
             && $this->view->invitedMemberCount <= Zend_Registry::get('invitedMemberLimit')) {
+                // Invite member $userId for the project $projectId
                 $invited = new Application_Model_Invited();
                 $invited->setProjectId($projectId);
                 $invited->setUserId($userId);
                 $invited->setStatus(1);
                 $result = $invitedMapper->invitedSave($invited); 
+                
+                // Assign success message to session namespace
                 $this->_messageNamespace->message = 'You have successfully invited this person!';
+                
+                // Redirect to invite-member page
                 $this->_redirector->gotoRoute(array('projectId' => $projectId), 'inviteMember');
         }
         
+        // Get members to invite
         $userMapper = new Application_Model_UserMapper();
         $this->view->suggestedInviteMembers = $userMapper->getMembersToInvite($this->view->projectId);
-        } catch(Exception $e) {
-            echo $e->getMessage();
-        }
     }
     
 }

@@ -57,7 +57,7 @@ if ($this->bookmarkedMembers) {
                 <span>Member since : <?php echo date('d M Y',strtotime($member->getCreatedOn()))?></span>
                 <span>Rating : <?php echo $member->getRating()?></span>
                 <span>Projects Complete : <?php echo $member->getUserHired()?></span>
-                <span>Location : <?php //echo getCountryFullName($member->getCountry())?></span>
+                <span>Location : <?php echo $member->getCountry()?></span>
             </div>
             <div class="clear"></div>
         </div>

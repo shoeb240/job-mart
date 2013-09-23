@@ -37,6 +37,7 @@ class MemberController extends Zend_Controller_Action
     {
         $this->_redirector = $this->_helper->getHelper('Redirector');
         
+        // Initializing session namespaces
         $this->_loginNamespace = new Zend_Session_Namespace('login');
         $this->_messageNamespace = new Zend_Session_Namespace('message');
         
@@ -49,9 +50,11 @@ class MemberController extends Zend_Controller_Action
      */    
     public function indexAction()
     {
+        // Receive searchType filter parameter
         $searchType = $this->getRequest()->getParam('searchType');
         $this->view->searchType = $searchType;
         
+        // Prepare info for pagination
         $pageNo = $this->_getParam('page');
         if (empty($pageNo)) $pageNo = 1;
         $premiumLimit = 2;
@@ -59,7 +62,11 @@ class MemberController extends Zend_Controller_Action
         $startLimit = $defaultPerPage*($pageNo-1);
         
         $userMapper = new Application_Model_UserMapper();
+        
+        // Get premium members
         $this->view->membersPremium = $userMapper->getMembersPremium($premiumLimit);
+        
+        // Get total default member count and default members
         $totalRows = $userMapper->getMembersDefaultCount();
         $this->view->membersDefault = $userMapper->getMembersDefault($searchType, $startLimit, $defaultPerPage);
 
@@ -69,7 +76,7 @@ class MemberController extends Zend_Controller_Action
         $paginator->setItemCountPerPage($defaultPerPage);
         $this->view->pagination = $paginator;
         
-        
+        // Get project primary categories
         $primaryCategory = new Application_Model_PrimaryCategoryMapper();
         $this->view->primaryCategories = $primaryCategory->getPrimaryCategories();
     }
@@ -81,16 +88,19 @@ class MemberController extends Zend_Controller_Action
      */    
     public function categoryAction()
     {
+        // Receive searchType and categoryId params
         $categoryId = $this->getRequest()->getParam('categoryId');
         $searchType = $this->getRequest()->getParam('searchType');
         $this->view->searchType = $searchType;
         $this->view->categoryId = $categoryId;
         
+        // Prepare info for pagination
         $pageNo = $this->_getParam('page');
         if (empty($pageNo)) $pageNo = 1;
         $perPage = 9;
         $startLimit = $perPage*($pageNo-1);
         
+        // Get members from provided category, if categoryId is not given all category members taken
         $userMapper = new Application_Model_UserMapper();
         $this->view->membersCategoryAll = $userMapper->getMembersCategoryAll($categoryId, $searchType, $startLimit, $perPage);
         
@@ -100,6 +110,7 @@ class MemberController extends Zend_Controller_Action
         $paginator->setItemCountPerPage($perPage);
         $this->view->pagination = $paginator;
         
+        // Get project primary categories
         $primaryCategory = new Application_Model_PrimaryCategoryMapper();
         $this->view->primaryCategories = $primaryCategory->getPrimaryCategories();
     }
@@ -111,14 +122,17 @@ class MemberController extends Zend_Controller_Action
      */    
     public function featuredMembersAction()
     {
+        // Receive searchType filter parameter
         $searchType = $this->getRequest()->getParam('searchType');
         $this->view->searchType = $searchType;
         
+        // Prepare pagination info
         $pageNo = $this->_getParam('page');
         if (empty($pageNo)) $pageNo = 1;
         $perPage = 9;
         $startLimit = $perPage*($pageNo-1);
 
+        // Get featured member count and featured members
         $userMapper = new Application_Model_UserMapper();
         $totalRows = $userMapper->getMembersFeaturedCount($searchType);
         $this->view->featuredMembers = $userMapper->getMembersFeatured($searchType, 
@@ -139,20 +153,25 @@ class MemberController extends Zend_Controller_Action
      */    
     public function currentHiredMembersAction()
     {
+        // Get logged in userId
         $sessionUserId = $this->_loginNamespace->session_user_id;
         
+        // Redirect to login page if user is not logged in
         if (empty($sessionUserId)) {
             $this->_redirector->gotoSimple('login', 'index');
         }
         
+        // Receive searchType filter parameter
         $searchType = $this->getRequest()->getParam('searchType');
         $this->view->searchType = $searchType;
         
+        // Prepare pagination info
         $pageNo = $this->_getParam('page');
         if (empty($pageNo)) $pageNo = 1;
         $perPage = 1;
         $startLimit = $perPage*($pageNo-1);
 
+        // Get total current hired member count and current hired members
         $projectBidMapper = new Application_Model_ProjectBidMapper();
         $totalRows = $projectBidMapper->getCurrentHiredMembersCount($sessionUserId);
         $this->view->currentHiredMembers = $projectBidMapper->getCurrentHiredMembers($sessionUserId, $searchType, 
@@ -172,20 +191,25 @@ class MemberController extends Zend_Controller_Action
      */    
     public function bookmarksAction()
     {
+        // Get logged in userId
         $sessionUserId = $this->_loginNamespace->session_user_id;
         
+        // Redirect to login page if user is not logged in
         if (empty($sessionUserId)) {
             $this->_redirector->gotoSimple('login', 'index');
         }
         
+        // Receive searchType filter parameter
         $searchType = $this->getRequest()->getParam('searchType');
         $this->view->searchType = $searchType;
         
+        // Prepare pagination info
         $pageNo = $this->_getParam('page');
         if (empty($pageNo)) $pageNo = 1;
         $perPage = 9;
         $startLimit = $perPage*($pageNo-1);
 
+        // Get total bookmarked member count and bookmarked members
         $userMapper = new Application_Model_UserMapper();
         $bookmarkMapper = new Application_Model_BookmarkMapper();
         $totalRows = $bookmarkMapper->getBookmarkedMembersCount($sessionUserId);
@@ -208,8 +232,10 @@ class MemberController extends Zend_Controller_Action
      */    
     public function memberSearchAction()
     {
+        // Receive member search post value
         $username = $this->getRequest()->getPost('member_search');
 
+        // Get searched members
         $userMapper = new Application_Model_UserMapper();
         $this->view->searchedMembers = $userMapper->getSearchedMembers($username);
     }
@@ -221,8 +247,10 @@ class MemberController extends Zend_Controller_Action
      */    
     public function creativeSearchAction()
     {
+        // Receive creative search post value
         $username = $this->getRequest()->getPost('creative_search');
 
+        // Get searched creatives
         $userMapper = new Application_Model_UserMapper();
         $this->view->searchedCreatives = $userMapper->getSearchedCreatives($username);
     }

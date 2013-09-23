@@ -64,7 +64,7 @@
                  <span>Member since : <?php echo date('d M Y',strtotime($defaultMember->getCreatedOn()))?></span>
                  <span>Rating : <?php echo $defaultMember->getRating()?></span>
                  <span>Projects Complete : <?php echo $defaultMember->getUserWorked()?></span>
-                 <span>Location : <?php //echo substr(getCountryFullName($defaultMember->getCountry()), 0, 24)?>...</span>
+                 <span>Location : <?php echo $defaultMember->getCountry()?></span>
             </div>
             <div class="clear"></div>
         </div><!-- END rec_memb_box  (3) -->

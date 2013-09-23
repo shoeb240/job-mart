@@ -6,7 +6,7 @@
 
 <div class="projects" id="container">
     <div style="width:920px;" class="main_box left members_list project_list member_project">
-        <h3 class="left">FREELANCER FEEDBACK FOR (<?php echo $this->projectAssignedUser->getProjectTitle();?>)</h3>
+        <h3 class="left">FREELANCER FEEDBACK FOR (<?php echo $this->projectOwnerUser->getProjectTitle();?>)</h3>
         <div class="search_area right">
             <form name="job_search_Frm" method="post" action="<?php echo $this->baseUrl('project/job_search'); ?>">
                 <input type="text" name="job_search" id="job_search" placeholder="SEARCH FOR A JOB" />
@@ -21,18 +21,18 @@
             <label class="field_title">Project Name :	</label>
             <span>
                 <a href="<?php echo $this->baseUrl('project/project-details'); ?>/<?php echo $this->projectId?>/">
-                    <?php echo $this->projectAssignedUser->getProjectTitle();?>
+                    <?php echo $this->projectOwnerUser->getProjectTitle();?>
                 </a>
             </span>
             <div class="clear"></div>
 
-            <label class="field_title">Project Budget :</label><span>$<?php echo $this->projectAssignedUser->getCost();?></span>
+            <label class="field_title">Project Budget :</label><span>$<?php echo $this->projectOwnerUser->getCost();?></span>
             <div class="clear"></div>
 
             <label class="field_title">Project Owner :</label>
             <span>  
-                <a href="<?php echo $this->baseUrl('account/profile'); ?>/<?php echo $this->projectAssignedUser->getProjectOwner()->getUsername()?>">
-                <?php echo $this->projectAssignedUser->getProjectOwner()->getUsername();?>
+                <a href="<?php echo $this->baseUrl('account/profile'); ?>/<?php echo $this->projectOwnerUser->getProjectOwner()->getUsername()?>">
+                <?php echo $this->projectOwnerUser->getProjectOwner()->getUsername();?>
                 </a>  
             </span>
             <div class="clear"></div>

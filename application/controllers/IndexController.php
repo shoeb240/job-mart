@@ -43,6 +43,7 @@ class IndexController extends Zend_Controller_Action
      */    
     public function indexAction()
     {
+        // Get success or error messages from session for view part and then unset
         if ($this->_messageNamespace->message) {
             $this->view->message = $this->_messageNamespace->message;
             unset($this->_messageNamespace->message);
@@ -52,6 +53,7 @@ class IndexController extends Zend_Controller_Action
             unset($this->_messageNamespace->error);
         }
         
+        // Get premium members
         $userMapper = new Application_Model_UserMapper();
         $this->view->membersPremium = $userMapper->getMembersPremium();
     }
@@ -77,6 +79,7 @@ class IndexController extends Zend_Controller_Action
         $form = $this->getLoginForm();
         $this->view->form = $form;
         
+        // Get success or error messages from session for view part and then unset
         if ($this->_messageNamespace->error) {
             $this->view->error = $this->_messageNamespace->error;
             unset($this->_messageNamespace->error);
@@ -84,42 +87,49 @@ class IndexController extends Zend_Controller_Action
 
         if ($this->getRequest()->isPost()) {
             if (!$form->isValid($_POST)) {
+                // Retrieve form error messages and prepare for view part
                 $errors = $form->getMessages();
                 $this->view->error = '';
                 foreach ($errors as $field => $fieldErrors) {
                     $this->view->error .= $field . ': ' . implode(' ', $fieldErrors) . '<br />';
                 }
             } else {
-                Zend_session::start();
-                
+                // Receive post values
                 $username = $this->getRequest()->getPost('username');
                 $password = $this->getRequest()->getPost('password');
                 $keepLoggedin = $this->getRequest()->getPost('keep_loggedin');
                 
         
-                // using DbTable adapter
+                // Using DbTable adapter
                 $config = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', 'development');
                 $dbAdapter = Zend_Db::factory($config->resources->db->adapter, $config->resources->db->params);
 
+                // Preparing zend auth adapter
                 $authAdapter = new Zend_Auth_Adapter_DbTable($dbAdapter);
                 $authAdapter->setTableName('job_user')
                             ->setIdentityColumn('username')
                             ->setCredentialColumn('password')
                             ->setCredentialTreatment('MD5(?) AND status = 1');
 
+                // Set login username and password as auth adapter identity and credential
                 $authAdapter->setIdentity($username)
                             ->setCredential($password);
 
+                // Create zend auth instance and authenticate
                 $auth = Zend_Auth::getInstance();
                 $result = $auth->authenticate($authAdapter);
+                
                 if ($result->isValid()) {
+                    // On authentication success get user info
                     $loggedinUser = $authAdapter->getResultRowObject();
                     
+                    // Store login info to session namespace
                     $this->_loginNamespace->user_logged_in = 1;
                     $this->_loginNamespace->session_user_id = $loggedinUser->user_id;
-                    $this->_loginNamespace->user_username = $loggedinUser->username;
-                    $this->_loginNamespace->user_email_address = $loggedinUser->email;
+                    $this->_loginNamespace->session_username = $loggedinUser->username;
+                    $this->_loginNamespace->session_email_address = $loggedinUser->email;
 
+                    // Update last login time
                     $userMapper = new Application_Model_UserMapper();
                     $userMapper->updateLastLogin($loggedinUser->user_id);
                     
@@ -130,15 +140,19 @@ class IndexController extends Zend_Controller_Action
                         $zendAuth->setExpirationSeconds($loggedInTime);
                     }
                     
+                    // On success add success message to session namespace and redirect to user account
                     $this->_messageNamespace->message = 'You are successfully logged in.';
                     $this->_redirector->gotoSimple('index', 'account');
                 } else {
+                    // Retrieve form error messages and prepare for view part
                     $errors = $form->getMessages();
                     $errorSt = '';
                     foreach ($errors as $field => $fieldErrors) {
                         $errorSt .= $field . ': ' . implode(' ', $fieldErrors) . '<br />';
                     }
                     $this->_messageNamespace->error = $errorSt;
+                    
+                    // On authentication failure, redirect to login page
                     $this->_redirector->gotoSimple('login', 'index');
                 }
             }
@@ -153,10 +167,13 @@ class IndexController extends Zend_Controller_Action
      */
     public function logoutAction()
     {
+        // Clear zend auth identity
         Zend_Auth::getInstance()->clearIdentity();
         
+        // Remove 'login' session namespace
         Zend_Session::namespaceUnset('login');
         
+        // Redirect to login page
         $this->_redirector->gotoSimple('login', 'index');
     }
     
@@ -173,45 +190,40 @@ class IndexController extends Zend_Controller_Action
     }
     
     /**
-     * Create My_Form_PaypalPayment form
-     *
-     * @return My_Form_PaypalPayment
-     */
-    public function getPaypalPaymentForm()
-    {
-        $form = new My_Form_PaypalPayment();
-        return $form;
-    }
-    
-    /**
      * User signup
      *
      * @return void
+     * @todo: email work
      */
     public function signupAction()
     {
+        // Get project primary categories
         $primaryCategoryMapper = new Application_Model_PrimaryCategoryMapper();
         $primaryCategories = $primaryCategoryMapper->getPrimaryCategories();
         
+        // Get membership types
         $membershipMapper = new Application_Model_MembershipMapper();
         $membershipList = $membershipMapper->getMembershipList();
-        
+
+        // Create signup form, My_Form_Signup
         $params['primaryCategories'] = $primaryCategories;
         $params['membershipList'] = $membershipList;
-
         $form = $this->getSignupForm($params);
         $this->view->form = $form;
 
         if ($this->getRequest()->isPost()) {
             if (!$form->isValid($_POST)) {
+                // Retrieve form error messages and prepare for view part
                 $errors = $form->getMessages();
                 $this->view->error = '';
                 foreach ($errors as $field => $fieldErrors) {
                     $this->view->error .= $field . ': ' . implode(' ', $fieldErrors) . '<br />';
                 }
             } else {
+                // Change layout to simple one
                 $this->_helper->layout->setLayout('layout-simple');
         
+                // Prepare user object to store in db
                 $user = new Application_Model_User();
                 $user->setUsername($this->getRequest()->getPost('username'));
                 $user->setFullName($this->getRequest()->getPost('full_name'));
@@ -227,34 +239,43 @@ class IndexController extends Zend_Controller_Action
                 $user->setPrimaryCategoryId($this->getRequest()->getPost('primary_category_id'));
                 $user->setMembershipId($this->getRequest()->getPost('membership_id'));
                 
+                // Save new user
                 $userMapper = new Application_Model_UserMapper();
                 $userId = $userMapper->saveUser($user);
                 
                 if (!$userId) {
+                     // On failure redirect to home page
                      $this->_messageNamespace->error = 'User sign up failed.';
                      $this->_redirector->gotoSimple('index', 'index');
                 }
                     
                 if ($this->getRequest()->getPost('membership_id') == 0) {
-                    // email work
-                    
+                    // todo: email work
+                    // Freemembership success
+                    // On success add success message to session and redirect to home page
                     $this->_messageNamespace->message = 'You have signed up successfully.';
                     $this->_redirector->gotoSimple('index', 'index');
 
                 } else {
-                    
+                    // Paid membership
+                    // Redirect to paypalPayment action for payment processing
                     $this->_redirector->gotoRoute(array('userId' => $userId), 'paypalPayment');
                 }
                 
             }
         }
         
-//        if ($this->_messageNamespace->error) {
-//            $this->view->error = $this->_messageNamespace->error;
-//            unset($this->_messageNamespace->error);
-//        }
-        
-        
+    }
+    
+    /**
+     * Create My_Form_PaypalPayment form
+     *
+     * @return My_Form_PaypalPayment
+     */
+    public function getPaypalPaymentForm()
+    {
+        $form = new My_Form_PaypalPayment();
+        return $form;
     }
     
     /**
@@ -266,15 +287,19 @@ class IndexController extends Zend_Controller_Action
      */
     public function paypalPaymentAction()
     {
+        // Change layout to simple one
         $this->_helper->layout->setLayout('layout-simple');
         
         $userId = $this->getRequest()->getParam('userId');
         
+        // Get user membership
         $userMapper = new Application_Model_UserMapper();
         $userMembership = $userMapper->getUserMembership($userId);
         
+        // Get host name
         $host = $this->getRequest()->getHttpHost();
 
+        // Prepare data for paypal payment form to post
         $data['notify_url']        = $this->view->baseUrl($host . '/ipn');
         $data['currency_code']     = Zend_Registry::get('ADMIN_CURRENCY');
         $data['business']          = Zend_Registry::get('BUSINESS_EMAIL');
@@ -287,6 +312,7 @@ class IndexController extends Zend_Controller_Action
         $data['a3']                = Zend_Registry::get('PAYPAL_a3'); 
         $data['payer_email']       = $userMembership->getEmail();
         
+        // Create paypal payment form, My_Form_PaypalPayment
         $form = $this->getPaypalPaymentForm();
         $form->populate($data);
         $this->view->form = $form;

@@ -474,12 +474,13 @@ class Application_Model_UserMapper
                                                       'balance' => '(SELECT SUM(cb.balance) 
                                                                      FROM job_credit_balance cb 
                                                                      WHERE cb.user_id = u.user_id)'))
+               ->join(array('p'=>'job_project'), 
+                            "u.user_id = p.assigned_user_id AND (p.project_status = 'closed' OR p.project_status = 'opened')", 
+                            array('closed_projects' => "SUM(CASE WHEN project_status LIKE '%closed%' THEN 1 ELSE 0 END)",
+                                  'opened_projects' => "SUM(CASE WHEN project_status LIKE '%opened%' THEN 1 ELSE 0 END)"))
                ->joinLeft(array('pc' => 'job_primary_category'), 
                           'u.primary_category_id = pc.primary_category_id', 
                           array('pc.category_title'))
-               ->joinLeft(array('p'=>'job_project'), 
-                          'u.user_id = p.user_id AND p.project_status = "closed"', 
-                          array('closed_projects' => 'COUNT(p.project_status)'))
                ->where("u.username LIKE '%{$username}%'")
                ->where('u.status = ?', 1)
                ->group('u.user_id')
@@ -495,7 +496,8 @@ class Application_Model_UserMapper
             $user->setCountry($row->country);
             $user->setIsPremium($row->is_premium);
             $user->setProfileImage($row->profile_image);
-            $user->setUserWorked($row->closed_projects);
+            $user->setOpenProjects($row->opened_projects);
+            $user->setUserHired($row->closed_projects);
             $user->setBalance($row->balance);
             $user->setRating($this->getUserRating($row->balance));
             $primaryCategory = new Application_Model_PrimaryCategory();
@@ -517,14 +519,14 @@ class Application_Model_UserMapper
                                                                      FROM job_credit_balance cb 
                                                                      WHERE cb.user_id = u.user_id)'))
                ->join(array('p'=>'job_project'), 
-                      "u.user_id = p.user_id AND (p.project_status = 'closed' OR p.project_status = 'closed')", 
-                      array('closed_projects' => "SUM(CASE WHEN project_status LIKE '%closed%' THEN 1 ELSE 0 END)",
-                            'opened_projects' => "SUM(CASE WHEN project_status LIKE '%opened%' THEN 1 ELSE 0 END)"))
+                      "u.user_id = p.assigned_user_id AND p.project_status = 'closed'", 
+                      array('closed_projects' => 'COUNT(p.project_status)'))
                ->joinLeft(array('pc' => 'job_primary_category'), 
                           'u.primary_category_id = pc.primary_category_id', 
                           array('pc.category_title'))
 
-               ->where("u.username LIKE '%$username%' AND u.status = 1")
+               ->where("u.username LIKE '%{$username}%'")
+               ->where('u.status = ?', 1)
                ->group('u.user_id')
                ->order('u.username');
         $rowSets = $this->getTable()->fetchAll($select);
@@ -538,7 +540,6 @@ class Application_Model_UserMapper
             $user->setCountry($row->country);
             $user->setProfileImage($row->profile_image);
             $user->setUserWorked($row->closed_projects);
-            $user->setOpenProjects($row->opened_projects);
             $user->setBalance($row->balance);
             $user->setRating($this->getUserRating($row->balance));
             $primaryCategory = new Application_Model_PrimaryCategory();

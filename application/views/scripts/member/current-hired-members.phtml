@@ -56,7 +56,7 @@ if ($this->currentHiredMembers) {
                 <span>Member since : <?php echo date('d M Y',strtotime($projectBid->getBidderUser()->getCreatedOn()))?></span>
                 <span>Rating : <?php echo $projectBid->getBidderUser()->getRating()?></span>
                 <span>Projects Complete : <?php echo $projectBid->getBidderUser()->getUserHired()?></span>
-                <span>Location : <?php //echo getCountryFullName($projectBid->getCountry())?></span>
+                <span>Location : <?php echo $projectBid->getCountry()?></span>
             </div>
             <div class="clear"></div>
         </div>

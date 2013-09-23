@@ -127,6 +127,14 @@ class Application_Model_MessageMapper
         return count($rowSets);
     }
     
+    /**
+     * Get inbox project messages
+     *
+     * @param integer $projectId
+     * @param integer $senderUserId
+     * @param integer $sessionUserId     * 
+     * @return array $info Array of Application_Model_Message
+     */
     public function getProjectMessagesBySender($projectId, $senderUserId, $sessionUserId)
     {
         $select = $this->getTable()->select();

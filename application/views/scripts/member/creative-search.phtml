@@ -42,9 +42,8 @@
                   <span>Category : <?php echo $creative->getPrimaryCategory()->getCategoryTitle()?></span>
                   <span>Member since : <?php echo date('d M Y',strtotime($creative->getCreatedOn()))?></span>
                   <span>Rating : <?php echo $creative->getRating()?></span>
-                  <span>Projects Open : <?php echo $creative->getOpenProjects()?></span>
-                  <span>Projects Complete : <?php echo $creative->getUserHired();?></span>
-                  <span>Location : <?php //echo getCountryFullName($creative->getCountry())?></span>
+                  <span>Projects Complete : <?php echo $creative->getUserWorked();?></span>
+                  <span>Location : <?php echo $creative->getCountry()?></span>
               </div>
               <div class="clear"></div>
           </div>

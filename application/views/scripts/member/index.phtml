@@ -61,7 +61,7 @@
                 <span>Member since : <?php echo date('d M Y',strtotime($premiumMember->getCreatedOn()))?></span>
                 <span>Rating : <?php echo $premiumMember->getRating()?></span>
                 <span>Projects Complete : <?php echo $premiumMember->getUserWorked()?></span>
-                <span>Location : <?php //echo substr(getCountryFullName($premiumMember->getCountry()), 0, 24)?>...</span>
+                <span>Location : <?php echo $premiumMember->getCountry()?></span>
             </div>
             <div class="clear"></div>
         </div><!-- END rec_memb_box  (1) -->
@@ -107,7 +107,7 @@
                  <span>Member since : <?php echo date('d M Y',strtotime($defaultMember->getCreatedOn()))?></span>
                  <span>Rating : <?php echo $defaultMember->getRating()?></span>
                  <span>Projects Complete : <?php echo $defaultMember->getUserWorked()?></span>
-                 <span>Location : <?php //echo substr(getCountryFullName($defaultMember->getCountry()), 0, 24)?>...</span>
+                 <span>Location : <?php echo $defaultMember->getCountry()?></span>
             </div>
             <div class="clear"></div>
         </div><!-- END rec_memb_box  (3) -->

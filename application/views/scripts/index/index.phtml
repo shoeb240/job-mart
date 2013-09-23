@@ -81,7 +81,7 @@
             <span>Member since : <? echo date('d M Y', strtotime($user->getCreatedOn()))?></span>
             <span>Rating : <?php echo $user->getRating();?></span>
             <span>Projects Complete : <?php echo $user->getUserWorked()?></span>
-            <span>Location : <?php echo $user->getCountry();//getCountryFullName($user->getCountry()))?></span>
+            <span>Location : <?php echo $user->getCountry();?></span>
         </div>
         <div class="clear"></div>
     </div><!-- END rec_memb_box  (1) -->
