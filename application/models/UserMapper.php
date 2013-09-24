@@ -10,8 +10,16 @@
  */
 class Application_Model_UserMapper
 {
+    /**
+     * @var Application_Model_DbTable_User
+     */
     private $_dbTable = null;
     
+    /**
+     * Create Zend_Db_Adapter_Abstract object
+     *
+     * @return Application_Model_DbTable_User
+     */
     public function getTable()
     {
         if (null == $this->_dbTable) {
@@ -21,6 +29,12 @@ class Application_Model_UserMapper
         return $this->_dbTable;
     }
     
+    /**
+     * Get premium members
+     *
+     * @param  int   $limit
+     * @return array $info  Array of Application_Model_User
+     */
     public function getMembersPremium($limit = 6)
     {
         $select = $this->getTable()->select();
@@ -63,6 +77,14 @@ class Application_Model_UserMapper
         return $info;
     }
     
+    /**
+     * Get featured members
+     *
+     * @param  int   $searchType
+     * @param  int   $startLimit
+     * @param  int   $limit
+     * @return array $info        Array of Application_Model_User
+     */
     public function getMembersFeatured($searchType = 'newest', $startLimit = 0, $limit = 4)
     {
         if ($searchType == 'newest') {
@@ -116,6 +138,11 @@ class Application_Model_UserMapper
         return $info;
     }
     
+    /**
+     * Get featured members count
+     *
+     * @return int
+     */
     public function getMembersFeaturedCount()
     {
         $select = $this->getTable()->select();
@@ -127,6 +154,14 @@ class Application_Model_UserMapper
         return $row['total_rows'];
     }    
     
+    /**
+     * Get default members
+     *
+     * @param  int   $searchType
+     * @param  int   $startLimit
+     * @param  int   $limit
+     * @return array $info       Array of Application_Model_User
+     */
     public function getMembersDefault($searchType = 'newest', $startLimit = 0, $limit = 4)
     {
         if ($searchType == 'newest') {
@@ -180,6 +215,11 @@ class Application_Model_UserMapper
         return $info;
     }
     
+    /**
+     * Get default members count
+     *
+     * @return int
+     */
     public function getMembersDefaultCount()
     {
         $select = $this->getTable()->select();
@@ -191,6 +231,15 @@ class Application_Model_UserMapper
         return $row['total_rows'];
     }
     
+    /**
+     * Get members by category
+     *
+     * @param  int   $categoryId
+     * @param  int   $searchType
+     * @param  int   $startLimit
+     * @param  int   $limit
+     * @return array $info       Array of Application_Model_User
+     */
     public function getMembersCategoryAll($categoryId, $searchType = 'newest', $startLimit = 0, $limit = 4)
     {
         if ($searchType == 'newest') {
@@ -246,6 +295,12 @@ class Application_Model_UserMapper
         return $info;
     }
     
+    /**
+     * Get members who have completed projects to invite
+     *
+     * @param  int   $projectId
+     * @return array $info      Array of Application_Model_User
+     */
     public function getMembersToInvite($projectId)
     {
         $select = $this->getTable()->select();
@@ -292,6 +347,12 @@ class Application_Model_UserMapper
         return $info;
     }
     
+    /**
+     * Get primary category of the user
+     *
+     * @param  int $userId
+     * @return int
+     */
     public function getPrimaryCategoryByUser($userId)
     {
         $select = $this->getTable()->select();
@@ -302,6 +363,12 @@ class Application_Model_UserMapper
         return $row['primary_category_id'];
     }
     
+    /**
+     * Get userId by username
+     *
+     * @param  int $username
+     * @return int 
+     */
     public function getUserId($username)
     {
         $select = $this->getTable()->select();
@@ -313,6 +380,12 @@ class Application_Model_UserMapper
         return $row->user_id;
     }
     
+    /**
+     * Get username by userId
+     *
+     * @param  int    $userId
+     * @return string
+     */
     public function getUsername($userId)
     {
         $select = $this->getTable()->select();
@@ -324,6 +397,12 @@ class Application_Model_UserMapper
         return $row->username;
     }
     
+    /**
+     * Get user info
+     *
+     * @param  int   $userId
+     * @return array $info   Array of Application_Model_User
+     */
     public function getUserInfo($userId)
     {
         $select = $this->getTable()->select();
@@ -390,6 +469,12 @@ class Application_Model_UserMapper
         return $user;
     }
     
+    /**
+     * Save user
+     *
+     * @param  Application_Model_User $user
+     * @return int
+     */
     public function saveUser(Application_Model_User $user)
     {
         $password = $this->getTable()->getAdapter()->quoteInto('MD5(?)', $user->getPassword());
@@ -412,6 +497,15 @@ class Application_Model_UserMapper
         return $this->getTable()->insert($data);
     }
     
+    /**
+     * Get bookmarked mebers by the user
+     *
+     * @param  int   $userId
+     * @param  int   $searchType
+     * @param  int   $startLimit
+     * @param  int   $limit
+     * @return array $info       Array of Application_Model_User
+     */
     public function getBookmarkedMembers($userId, $searchType = 'newest', $startLimit = 0, $limit = 4)
     {
         if ($searchType == 'newest') {
@@ -464,6 +558,12 @@ class Application_Model_UserMapper
         return $info;
     }
     
+    /**
+     * Get searched members
+     *
+     * @param  int   $username
+     * @return array $info      Array of Application_Model_User
+     */
     public function getSearchedMembers($username)
     {
         $select = $this->getTable()->select();
@@ -509,6 +609,12 @@ class Application_Model_UserMapper
         return $info;
     }
     
+    /**
+     * Get searched creative members who have completed projects
+     *
+     * @param  int   $username
+     * @return array $info      Array of Application_Model_User
+     */
     public function getSearchedCreatives($username)
     {
         $select = $this->getTable()->select();
@@ -551,6 +657,12 @@ class Application_Model_UserMapper
         return $info;
     }
     
+    /**
+     * Update last login time
+     *
+     * @param  int   $userId
+     * @return int
+     */
     public function updateLastLogin($userId)
     {
         $data = array(
@@ -559,10 +671,16 @@ class Application_Model_UserMapper
 
         $where = $this->getTable()->getAdapter()->quoteInto('user_id = ?', $userId, 'INTEGER');
 
-        $this->getTable()->update($data, $where);
+        return $this->getTable()->update($data, $where);
         
     }
     
+    /**
+     * Get membership of the user
+     *
+     * @param  int   $userId
+     * @return array $info      Array of Application_Model_User
+     */
     public function getUserMembership($userId)
     {
         $select = $this->getTable()->select();
@@ -588,6 +706,12 @@ class Application_Model_UserMapper
         return $user;
     }
     
+    /**
+     * Cancel user subscription
+     *
+     * @param  int $subscrId
+     * @return int
+     */
     public function cancelSubscription($subscrId)
     {
         $data = array(
@@ -598,9 +722,16 @@ class Application_Model_UserMapper
 
         $where = $this->getTable()->getAdapter()->quoteInto('subscr_id = ?', $subscrId, 'INTEGER');
 
-        $this->getTable()->update($data, $where);
+        return $this->getTable()->update($data, $where);
     }
     
+    /**
+     * Update user subscription
+     *
+     * @param  int $userId
+     * @param  int $subscrId
+     * @return int 
+     */
     public function updateSubscription($userId, $subscrId)
     {
         $select = $this->getTable()->select();
@@ -612,10 +743,18 @@ class Application_Model_UserMapper
             $row->subscr_id = $subscrId;
             $row->subscription_start_date = date('Y-m-d H:i:s',time());
 
-            $row->save();
+            return $row->save();
         }
+        
+        return 0;
     }
     
+    /**
+     * Update user info
+     *
+     * @param  Application_Model_User $user
+     * @return int
+     */
     public function updateUser(Application_Model_User $user)
     {
         $data = array(
@@ -632,125 +771,73 @@ class Application_Model_UserMapper
         return $this->getTable()->update($data, $where);
     }
     
+    /**
+     * Get user rating by user balance
+     *
+     * @param  int $balance
+     * @return int
+     */
     public function getUserRating($balance = 0)
     {
         if($balance <= 1000){
             $rating = 1;
-        }
-        else if($balance <= 2000)
-        {
+        } else if($balance <= 2000) {
             $rating = 2;
-        }
-        else if($balance <= 4000)
-        {
+        } else if($balance <= 4000) {
             $rating = 3;
-        }
-        else if($balance <= 6000)
-        {
+        } else if($balance <= 6000) {
             $rating = 4;
-        }
-        else if($balance <= 8000)
-        {
+        } else if($balance <= 8000) {
             $rating = 5;
-        }
-        else if($balance <= 10000)
-        {
+        } else if($balance <= 10000) {
             $rating = 6;
-        }
-        else if($balance <= 14000)
-        {
+        } else if($balance <= 14000) {
             $rating = 7;
-        }
-        else if($balance <= 18000)
-        {
+        } else if($balance <= 18000) {
             $rating = 8;
-        }
-        else if($balance <= 22000)
-        {
+        } else if($balance <= 22000) {
             $rating = 9;
-        }
-        else if($balance <= 26000)
-        {
+        } else if($balance <= 26000) {
             $rating = 10;
-        }
-        else if($balance <= 30000)
-        {
+        } else if($balance <= 30000) {
             $rating = 11;
-        }
-        else if($balance <= 34000)
-        {
+        } else if($balance <= 34000) {
             $rating = 12;
-        }
-        else if($balance <= 40000)
-        {
+        } else if($balance <= 40000) {
             $rating = 13;
-        }
-        else if($balance <= 46000)
-        {
+        } else if($balance <= 46000) {
             $rating = 14;
-        }
-        else if($balance <= 52000)
-        {
+        } else if($balance <= 52000) {
             $rating = 15;
-        }
-        else if($balance <= 58000)
-        {
+        } else if($balance <= 58000) {
             $rating = 16;
-        }
-        else if($balance <= 64000)
-        {
+        } else if($balance <= 64000) {
             $rating = 17;
-        }
-        else if($balance <= 70000)
-        {
+        } else if($balance <= 70000) {
             $rating = 18;
-        }
-        else if($balance <= 78000)
-        {
+        } else if($balance <= 78000) {
             $rating = 19;
-        }
-        else if($balance <= 86000)
-        {
+        } else if($balance <= 86000) {
             $rating = 20;
-        }
-        else if($balance <= 94000)
-        {
+        } else if($balance <= 94000) {
             $rating = 21;
-        }
-        else if($balance <= 102000)
-        {
+        } else if($balance <= 102000) {
             $rating = 22;
-        }
-        else if($balance <= 110000)
-        {
+        } else if($balance <= 110000) {
             $rating = 23;
-        }
-        else if($balance <= 118000)
-        {
+        } else if($balance <= 118000) {
             $rating = 24;
-        }
-        else if($balance <= 134000)
-        {
+        } else if($balance <= 134000) {
             $rating = 25;
-        }
-        else if($balance <= 144000)
-        {
+        } else if($balance <= 144000) {
             $rating = 26;
-        }
-        else if($balance <= 154000)
-        {
+        } else if($balance <= 154000) {
             $rating = 27;
-        }
-        else if($balance <= 164000)
-        {
+        } else if($balance <= 164000) {
             $rating = 28;
-        }
-        else if($balance <= 174000)
-        {
+        } else if($balance <= 174000) {
             $rating = 29;
-        }
-        else if($balance > 174000)
-        {
+        } else if($balance > 174000) {
             $rating = 30;
         }
         return $rating;

@@ -10,8 +10,16 @@
  */
 class Application_Model_FeedbackMapper
 {
+    /**
+     * @var Application_Model_DbTable_Feedback
+     */
     private $_dbTable = null;
     
+    /**
+     * Create Zend_Db_Adapter_Abstract object
+     *
+     * @return Application_Model_DbTable_Feedback
+     */
     public function getTable()
     {
         if (null == $this->_dbTable) {
@@ -22,10 +30,14 @@ class Application_Model_FeedbackMapper
     }
     
     /**
-     * Feedbacks given as project owner or assigned bidder
+     * Get feedbacks given as project owner or assigned bidder
      *
-     * @return array
-     */    
+     * @param  int    $userId
+     * @param  string $orderType
+     * @param  int    $startLimit
+     * @param  int    $limit
+     * @return array                Array of Application_Model_Feedback
+     */   
     public function getTestimonialsByUserId($userId, $orderType = 'DESC' , $startLimit = 0, $limit = 5)
     {
         $select = $this->getTable()->select();
@@ -73,6 +85,15 @@ class Application_Model_FeedbackMapper
         return $info;
     }
     
+    /**
+     * Get feedbacks given as project owner or assigned bidder
+     *
+     * @param  int    $userId
+     * @param  string $searchType
+     * @param  int    $startLimit
+     * @param  int    $limit
+     * @return array                Array of Application_Model_Feedback
+     */    
     public function getFeedbacksByMe($userId, $searchType = 'latest', $startLimit = 0, $limit = 10)
     {
         if($searchType == 'latest') {    
@@ -130,6 +151,12 @@ class Application_Model_FeedbackMapper
         return $info;
     }
     
+    /**
+     * Get feedback count given as project owner or assigned bidder
+     *
+     * @param  int $userId
+     * @return int    
+     */    
     public function getFeedbacksByMeCount($userId)
     {
         $select = $this->getTable()->select();
@@ -142,6 +169,15 @@ class Application_Model_FeedbackMapper
         return $row['total_rows'];
     }
     
+    /**
+     * Get feedbacks given for user both as project owner or assigned bidder
+     *
+     * @param  int    $userId
+     * @param  string $searchType
+     * @param  int    $startLimit
+     * @param  int    $limit
+     * @return array                Array of Application_Model_Feedback
+     */    
     public function getFeedbacksForMe($userId, $searchType = 'latest', $startLimit = 0, $limit = 10)
     {
         if($searchType == 'latest'){    
@@ -198,7 +234,13 @@ class Application_Model_FeedbackMapper
         
         return $info;
     }
-    
+
+    /**
+     * Get feedback count given for user both as project owner or assigned bidder
+     *
+     * @param  int    $userId
+     * @return int
+     */
     public function getFeedbacksForMeCount($userId)
     {
         $select = $this->getTable()->select();
@@ -210,7 +252,13 @@ class Application_Model_FeedbackMapper
         
         return $row['total_rows'];
     }
-    
+
+    /**
+     * Update project owner feedback
+     *
+     * @param  Application_Model_Feedback    $feedback
+     * @return int
+     */
     public function updateOwnerFeedback(Application_Model_Feedback $feedback)
     {
         $select = $this->getTable()->select();
@@ -229,6 +277,12 @@ class Application_Model_FeedbackMapper
         return $row->save();
     }
     
+    /**
+     * Update bidder feedback
+     *
+     * @param  Application_Model_Feedback $feedback
+     * @return int
+     */
     public function updateBidderFeedback(Application_Model_Feedback $feedback)
     {
         $select = $this->getTable()->select();
@@ -247,6 +301,12 @@ class Application_Model_FeedbackMapper
         return $row->save();
     }
     
+    /**
+     * Insert owner feedback
+     *
+     * @param  Application_Model_Feedback $feedback
+     * @return int
+     */    
     public function saveOwnerFeedback(Application_Model_Feedback $feedback)
     {
         $data = array(
@@ -258,7 +318,13 @@ class Application_Model_FeedbackMapper
         );
         return $this->getTable()->insert($data);
     }
-    
+
+    /**
+     * Insert bidder feedback
+     *
+     * @param  Application_Model_Feedback $feedback
+     * @return int
+     */    
     public function saveBidderFeedback(Application_Model_Feedback $feedback)
     {
         $data = array(

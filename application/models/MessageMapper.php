@@ -10,8 +10,16 @@
  */
 class Application_Model_MessageMapper
 {
+    /**
+     * @var Application_Model_DbTable_Message
+     */
     private $_dbTable = null;
     
+    /**
+     * Create Zend_Db_Adapter_Abstract object
+     *
+     * @return Application_Model_DbTable_Message
+     */
     public function getTable()
     {
         if (null == $this->_dbTable) {
@@ -21,6 +29,14 @@ class Application_Model_MessageMapper
         return $this->_dbTable;
     }
     
+    /**
+     * Get inbox messages, user is the receiver of the message
+     *
+     * @param  int   $userId
+     * @param  int   $startLimit
+     * @param  int   $limit     
+     * @return array $info       Array of Application_Model_Message
+     */
     public function getInboxList($userId, $startLimit, $limit)
     {
         $select = $this->getTable()->select();
@@ -59,6 +75,12 @@ class Application_Model_MessageMapper
         return $info;
     }
     
+    /**
+     * Get inbox message count
+     *
+     * @param  int   $userId
+     * @return int
+     */
     public function getInboxCount($userId)
     {
         $select = $this->getTable()->select();
@@ -72,6 +94,15 @@ class Application_Model_MessageMapper
         return count($rowSets);
     }
     
+    /**
+     * Get searched messages in the inbox
+     *
+     * @param  int   $userId
+     * @param  int   $messageSearchUser
+     * @param  int   $startLimit
+     * @param  int   $limit     
+     * @return array $info       Array of Application_Model_Message
+     */
     public function getInboxSearchedList($userId, $messageSearchUser, $startLimit, $limit)
     {
         $select = $this->getTable()->select();
@@ -111,6 +142,13 @@ class Application_Model_MessageMapper
         return $info;
     }
     
+    /**
+     * Get searched message count
+     *
+     * @param  int   $userId
+     * @param  int   $messageSearchUser
+     * @return int
+     */
     public function getInboxSearchedCount($userId, $messageSearchUser)
     {
         $select = $this->getTable()->select();
@@ -128,12 +166,12 @@ class Application_Model_MessageMapper
     }
     
     /**
-     * Get inbox project messages
+     * Get project messages sent by either $senderUserId or $sessionUserId
      *
-     * @param integer $projectId
-     * @param integer $senderUserId
-     * @param integer $sessionUserId     * 
-     * @return array $info Array of Application_Model_Message
+     * @param  int   $projectId
+     * @param  int   $senderUserId
+     * @param  int   $sessionUserId
+     * @return array $info          Array of Application_Model_Message
      */
     public function getProjectMessagesBySender($projectId, $senderUserId, $sessionUserId)
     {
@@ -168,6 +206,12 @@ class Application_Model_MessageMapper
         return $info;
     }    
     
+    /**
+     * Save message
+     *
+     * @param  Application_Model_Message   $message
+     * @return int
+     */
     public function saveMessage(Application_Model_Message $message)
     {
         $data['project_id']       = $message->getProjectId();
@@ -177,6 +221,14 @@ class Application_Model_MessageMapper
         return $this->getTable()->insert($data);
     }
     
+    /**
+     * Delete project message sent by $senderUserId and received by $userId
+     *
+     * @param  int   $searchType
+     * @param  int   $startLimit
+     * @param  int   $limit     
+     * @return array $info       Array of Application_Model_Message
+     */
     public function deleteInboxMessage($projectId, $senderUserId, $userId)
     {
         $data = array(
@@ -190,6 +242,14 @@ class Application_Model_MessageMapper
         $this->getTable()->update($data, $where);
     }
     
+    /**
+     * Get outbox message list
+     *
+     * @param  int   $userId
+     * @param  int   $startLimit
+     * @param  int   $limit     
+     * @return array $info       Array of Application_Model_Message
+     */
     public function getOutboxList($userId, $startLimit, $limit)
     {
         $select = $this->getTable()->select();
@@ -228,6 +288,12 @@ class Application_Model_MessageMapper
         return $info;
     }
     
+    /**
+     * Get count of outbox message
+     *
+     * @param  int   $userId
+     * @return int
+     */
     public function getOutboxCount($userId)
     {
         $select = $this->getTable()->select();
@@ -241,6 +307,15 @@ class Application_Model_MessageMapper
         return count($rowSets);
     }
     
+    /**
+     * Get searched outbox messages
+     *
+     * @param  int   $userId
+     * @param  int   $messageSearchUser
+     * @param  int   $startLimit     
+     * @param  int   $limit     
+     * @return array $info       Array of Application_Model_Message
+     */
     public function getOutboxSearchedList($userId, $messageSearchUser, $startLimit, $limit)
     {
         $select = $this->getTable()->select();
@@ -280,6 +355,13 @@ class Application_Model_MessageMapper
         return $info;
     }
     
+    /**
+     * Get count of searched outbox messages
+     *
+     * @param  int   $userId
+     * @param  int   $messageSearchUser
+     * @return int
+     */
     public function getOutboxSearchedCount($userId, $messageSearchUser)
     {
         $select = $this->getTable()->select();
@@ -297,6 +379,14 @@ class Application_Model_MessageMapper
         return count($rowSets);
     }
     
+    /**
+     * Update message status to deleted
+     *
+     * @param  int   $projectId
+     * @param  int   $receiverUserId
+     * @param  int   $userId     
+     * @return int
+     */
     public function deleteOutboxMessage($projectId, $receiverUserId, $userId)
     {
         $data = array(
@@ -310,6 +400,12 @@ class Application_Model_MessageMapper
         $this->getTable()->update($data, $where);
     }
     
+    /**
+     * Get unread message count
+     *
+     * @param  int   $userId
+     * @return int
+     */
     public function unreadMessageCount($userId)
     {
         $select = $this->getTable()->select();

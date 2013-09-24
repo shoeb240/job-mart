@@ -10,8 +10,16 @@
  */
 class Application_Model_ProjectBidAttachMapper
 {
+    /**
+     * @var Application_Model_DbTable_ProjectBidAttach
+     */
     private $_dbTable = null;
     
+    /**
+     * Create Zend_Db_Adapter_Abstract object
+     *
+     * @return Application_Model_DbTable_ProjectBidAttach
+     */
     public function getTable()
     {
         if (null == $this->_dbTable) {
@@ -21,6 +29,12 @@ class Application_Model_ProjectBidAttachMapper
         return $this->_dbTable;
     }
     
+    /**
+     * Get project bid attachment
+     *
+     * @param Application_Model_ProjectBidAttach $projectBidAttach
+     * @return int
+     */
     public function saveProjectBidAttach(Application_Model_ProjectBidAttach $projectBidAttach)
     {
         $data = array(

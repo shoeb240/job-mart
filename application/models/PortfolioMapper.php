@@ -10,8 +10,16 @@
  */
 class Application_Model_PortfolioMapper
 {
+    /**
+     * @var Application_Model_DbTable_Portfolio
+     */
     private $_dbTable = null;
     
+    /**
+     * Create Zend_Db_Adapter_Abstract object
+     *
+     * @return Application_Model_DbTable_Portfolio
+     */
     public function getTable()
     {
         if (null == $this->_dbTable) {
@@ -21,6 +29,12 @@ class Application_Model_PortfolioMapper
         return $this->_dbTable;
     }
     
+    /**
+     * Get user portfolio
+     *
+     * @param  int   $userId
+     * @return array $info    Array of Application_Model_Portfolio
+     */
     public function getPortfolioByUserId($userId)
     {
         $select = $this->getTable()->select();
@@ -47,7 +61,12 @@ class Application_Model_PortfolioMapper
         return $info;
     }
     
-    
+    /**
+     * Get portfolio details
+     *
+     * @param  int   $portfolioId      
+     * @return array $info          Array of Application_Model_Portfolio
+     */
     public function getPortfolioDetails($portfolioId)
     {
         $select = $this->getTable()->select();
@@ -70,7 +89,12 @@ class Application_Model_PortfolioMapper
         return $portfolio;
     }
     
-    
+    /**
+     * Delete portfolio
+     *
+     * @param  int $portfolioId
+     * @return int
+     */
     public function deletePortfolio($portfolioId)
     {
         $where = $this->getTable()->getAdapter()->quoteInto('portfolio_id = ?', $portfolioId, 'INTEGER');
@@ -78,6 +102,12 @@ class Application_Model_PortfolioMapper
         return $this->getTable()->delete($where);
     }
     
+    /**
+     * Insert portfolio
+     *
+     * @param  Application_Model_Portfolio $portfolio
+     * @return int
+     */
     public function addPortfolio(Application_Model_Portfolio $portfolio)
     {
         $data = array(
@@ -93,6 +123,12 @@ class Application_Model_PortfolioMapper
         return $this->getTable()->insert($data);
     }
     
+    /**
+     * Update portfolio
+     *
+     * @param  Application_Model_Portfolio $portfolio
+     * @return int
+     */
     public function updatePortfolio(Application_Model_Portfolio $portfolio)
     {
         $data = array(

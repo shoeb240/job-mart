@@ -10,8 +10,16 @@
  */
 class Application_Model_BookmarkMapper
 {
+    /**
+     * @var Application_Model_DbTable_Bookmark
+     */
     private $_dbTable = null;
     
+    /**
+     * Create Zend_Db_Adapter_Abstract object
+     *
+     * @return Application_Model_DbTable_Bookmark
+     */
     public function getTable()
     {
         if (null == $this->_dbTable) {
@@ -21,6 +29,13 @@ class Application_Model_BookmarkMapper
         return $this->_dbTable;
     }
     
+    /**
+     * Check if user bookmarked another selected user
+     *
+     * @param  int $userId
+     * @param  int $selectedId
+     * @return int 
+     */
     public function getIfBookmarked($userId, $selectedId)
     {
         $select = $this->getTable()->select();
@@ -32,6 +47,12 @@ class Application_Model_BookmarkMapper
         return $row->count;
     }
     
+    /**
+     * Bookmark a selected user
+     *
+     * @param  Application_Model_Bookmark $bookmark
+     * @return int 
+     */
     public function bookmarkUser(Application_Model_Bookmark $bookmark)
     {
         $data = array(
@@ -42,6 +63,13 @@ class Application_Model_BookmarkMapper
         return $this->getTable()->insert($data);
     }
     
+    /**
+     * Delete selected user from bookmark list
+     *
+     * @param  int $userId
+     * @param  int $selectedId
+     * @return int              The number of rows deleted.
+     */
     public function deleteBookmark($userId, $selectedId)
     {
         $where[] = $this->getTable()->getAdapter()->quoteInto('user_id = ?', $userId, 'INTEGER');
@@ -50,6 +78,12 @@ class Application_Model_BookmarkMapper
         return $this->getTable()->delete($where);
     }
     
+    /**
+     * Count number of bookmarked users
+     *
+     * @param  int $userId
+     * @return int          Number of bokmarked user
+     */
     public function getBookmarkedMembersCount($userId)
     {
         $select = $this->getTable()->select();

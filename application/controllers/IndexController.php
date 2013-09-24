@@ -203,7 +203,7 @@ class IndexController extends Zend_Controller_Action
         
         // Get membership types
         $membershipMapper = new Application_Model_MembershipMapper();
-        $membershipList = $membershipMapper->getMembershipList();
+        $membershipList = $membershipMapper->getPremiumMembershipList();
 
         // Create signup form, My_Form_Signup
         $params['primaryCategories'] = $primaryCategories;

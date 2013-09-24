@@ -10,8 +10,16 @@
  */
 class Application_Model_PrimaryCategoryMapper
 {
+    /**
+     * @var Application_Model_DbTable_PrimaryCategory
+     */
     private $_dbTable = null;
     
+    /**
+     * Create Zend_Db_Adapter_Abstract object
+     *
+     * @return Application_Model_DbTable_PrimaryCategory
+     */
     public function getTable()
     {
         if (null == $this->_dbTable) {
@@ -21,6 +29,11 @@ class Application_Model_PrimaryCategoryMapper
         return $this->_dbTable;
     }
     
+    /**
+     * Get primary project categories
+     *
+     * @return array $info Array of Application_Model_PrimaryCategory
+     */
     public function getPrimaryCategories()
     {
         $select = $this->getTable()->select();
@@ -38,6 +51,12 @@ class Application_Model_PrimaryCategoryMapper
         return $info;
     }
     
+    /**
+     * Get category title
+     *
+     * @param  int     $primaryCategoryId
+     * @return string
+     */
     public function getPrimaryCategoriyTitle($primaryCategoryId)
     {
         $select = $this->getTable()->select();

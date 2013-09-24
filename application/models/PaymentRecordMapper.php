@@ -10,8 +10,16 @@
  */
 class Application_Model_PaymentRecordMapper
 {
+    /**
+     * @var Application_Model_DbTable_PaymentRecord
+     */
     private $_dbTable = null;
     
+    /**
+     * Create Zend_Db_Adapter_Abstract object
+     *
+     * @return Application_Model_DbTable_PaymentRecord
+     */
     public function getTable()
     {
         if (null == $this->_dbTable) {
@@ -21,6 +29,12 @@ class Application_Model_PaymentRecordMapper
         return $this->_dbTable;
     }
     
+    /**
+     * Chcek for user active payment record (status = 1)
+     *
+     * @param  int      $userId
+     * @return boolean
+     */
     public function checkPayment($userId)
     {
         $select = $this->getTable()->select();

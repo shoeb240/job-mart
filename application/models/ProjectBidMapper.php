@@ -10,8 +10,16 @@
  */
 class Application_Model_ProjectBidMapper
 {
+    /**
+     * @var Application_Model_DbTable_ProjectBid
+     */
     private $_dbTable = null;
     
+    /**
+     * Create Zend_Db_Adapter_Abstract object
+     *
+     * @return Application_Model_DbTable_ProjectBid
+     */
     public function getTable()
     {
         if (null == $this->_dbTable) {
@@ -21,6 +29,12 @@ class Application_Model_ProjectBidMapper
         return $this->_dbTable;
     }
     
+    /**
+     * Get assigned bidder userId and username in an array indexed by project id
+     *
+     * @param  array $projectIds
+     * @return array $info                  
+     */
     public function getAssignedProjectsUsers($projectIds = array())
     {
         $select = $this->getTable()->select();
@@ -42,6 +56,12 @@ class Application_Model_ProjectBidMapper
         return $info;
     }
     
+    /**
+     * Get assign bid of the project
+     *
+     * @param  int                          $projectId
+     * @return Application_Model_ProjectBid $projectBid
+     */
     public function getAssignedBid($projectId)
     {
         $select = $this->getTable()->select(Zend_Db_Table::SELECT_WITH_FROM_PART);
@@ -65,6 +85,12 @@ class Application_Model_ProjectBidMapper
         return $projectBid;
     }
     
+    /**
+     * Get project bids with bidder user info and bidder message
+     *
+     * @param  int   $projectId
+     * @return array $info       Array of Application_Model_ProjectBid
+     */
     public function getProjectBids($projectId)
     {
         $select = $this->getTable()->select(Zend_Db_Table::SELECT_WITH_FROM_PART);
@@ -107,6 +133,12 @@ class Application_Model_ProjectBidMapper
         return $info;
     }
     
+    /**
+     * Get bid count of the user in last one month
+     *
+     * @param  int $userId
+     * @return int
+     */
     public function getBidNumberCount($userId)
     {
         $current_date = date('Y-m-d H:i:s', time());
@@ -127,6 +159,13 @@ class Application_Model_ProjectBidMapper
         return $row->bid_number;
     }
     
+    /**
+     * Assign the project to the bidder
+     *
+     * @param  int $projectId
+     * @param  int $bidderUserId
+     * @return int
+     */
     public function updateBidAssigned($projectId, $bidderUserId)
     {
         $data = array(
@@ -136,9 +175,16 @@ class Application_Model_ProjectBidMapper
         $where[] = $this->getTable()->getAdapter()->quoteInto('project_id = ?', $projectId, 'INTEGER');
         $where[] = $this->getTable()->getAdapter()->quoteInto('BIDDER_user_id = ?', $bidderUserId, 'INTEGER');
 
-        $this->getTable()->update($data, $where);
+        return $this->getTable()->update($data, $where);
     }
     
+    /**
+     * Accept the project as bidder
+     *
+     * @param  int $projectId
+     * @param  int $bidderUserId
+     * @return int
+     */
     public function setBidAcceptDecline($projectId, $bidderUserId)
     {
         $data = array(
@@ -148,9 +194,16 @@ class Application_Model_ProjectBidMapper
         $where[] = $this->getTable()->getAdapter()->quoteInto('project_id = ?', $projectId, 'INTEGER');
         $where[] = $this->getTable()->getAdapter()->quoteInto('BIDDER_user_id = ?', $bidderUserId, 'INTEGER');
 
-        $this->getTable()->update($data, $where);
+        return $this->getTable()->update($data, $where);
     }
     
+    /**
+     * Decline the project as bidder
+     *
+     * @param  int $projectId
+     * @param  int $bidderUserId
+     * @return int
+     */
     public function unsetBidAcceptDecline($projectId, $bidderUserId)
     {
         $data = array(
@@ -164,6 +217,13 @@ class Application_Model_ProjectBidMapper
         $this->getTable()->update($data, $where);
     }
     
+    /**
+     * Set bid status as deleted
+     *
+     * @param  int $projectId
+     * @param  int $bidderUserId
+     * @return int
+     */
     public function setBidDeleted($projectId, $bidderUserId)
     {
         $data = array(
@@ -176,6 +236,13 @@ class Application_Model_ProjectBidMapper
         $this->getTable()->update($data, $where);
     }
     
+    /**
+     * Get bidder info with project info and bid amount
+     *
+     * @param  int $projectId
+     * @param  int $userId
+     * @return Application_Model_ProjectBid
+     */
     public function getProjectUserBid($projectId, $userId)
     {
         $select = $this->getTable()->select();
@@ -205,6 +272,13 @@ class Application_Model_ProjectBidMapper
         return $projectBid;
     }
     
+    /**
+     * Get bid amount of a bid
+     *
+     * @param  int $projectId
+     * @param  int $userId
+     * @return int
+     */
     public function getProjectUserBidAmount($projectId, $userId)
     {
         $select = $this->getTable()->select();
@@ -217,6 +291,15 @@ class Application_Model_ProjectBidMapper
         return $row->bid_amount;
     }
     
+    /**
+     * Get current hired members info as a project owner
+     *
+     * @param  int   $userId
+     * @param  int   $searchType
+     * @param  int   $startLimit
+     * @param  int   $limit
+     * @return array $info          Array of Application_Model_ProjectBid
+     */
     public function getCurrentHiredMembers($userId, $searchType = 'newest', $startLimit = 0, $limit = 10)
     {
         if ($searchType == 'newest') {
@@ -285,6 +368,12 @@ class Application_Model_ProjectBidMapper
         return $info;
     }
     
+    /**
+     * Get count of current hired members as a project owner
+     *
+     * @param  int $userId
+     * @return int
+     */
     public function getCurrentHiredMembersCount($userId)
     {
         $select = $this->getTable()->select();
@@ -299,6 +388,12 @@ class Application_Model_ProjectBidMapper
         return count($rowSets);
     }
     
+    /**
+     * Save project bid
+     *
+     * @param  Application_Model_ProjectBid $projectId
+     * @return int
+     */
     public function saveProjectBid(Application_Model_ProjectBid $projectBid)
     {
         $data = array(
@@ -313,125 +408,73 @@ class Application_Model_ProjectBidMapper
         return $this->getTable()->insert($data);
     }
     
+    /**
+     * Get user rating depending on his balance
+     *
+     * @param  int $balance
+     * @return int $rating
+     */
     public function getUserRating($balance = 0)
     {
         if($balance <= 1000){
             $rating = 1;
-        }
-        else if($balance <= 2000)
-        {
+        } else if($balance <= 2000) {
             $rating = 2;
-        }
-        else if($balance <= 4000)
-        {
+        } else if($balance <= 4000) {
             $rating = 3;
-        }
-        else if($balance <= 6000)
-        {
+        } else if($balance <= 6000) {
             $rating = 4;
-        }
-        else if($balance <= 8000)
-        {
+        } else if($balance <= 8000) {
             $rating = 5;
-        }
-        else if($balance <= 10000)
-        {
+        } else if($balance <= 10000) {
             $rating = 6;
-        }
-        else if($balance <= 14000)
-        {
+        } else if($balance <= 14000) {
             $rating = 7;
-        }
-        else if($balance <= 18000)
-        {
+        } else if($balance <= 18000) {
             $rating = 8;
-        }
-        else if($balance <= 22000)
-        {
+        } else if($balance <= 22000) {
             $rating = 9;
-        }
-        else if($balance <= 26000)
-        {
+        } else if($balance <= 26000) {
             $rating = 10;
-        }
-        else if($balance <= 30000)
-        {
+        } else if($balance <= 30000) {
             $rating = 11;
-        }
-        else if($balance <= 34000)
-        {
+        } else if($balance <= 34000) {
             $rating = 12;
-        }
-        else if($balance <= 40000)
-        {
+        } else if($balance <= 40000) {
             $rating = 13;
-        }
-        else if($balance <= 46000)
-        {
+        } else if($balance <= 46000) {
             $rating = 14;
-        }
-        else if($balance <= 52000)
-        {
+        } else if($balance <= 52000) {
             $rating = 15;
-        }
-        else if($balance <= 58000)
-        {
+        } else if($balance <= 58000) {
             $rating = 16;
-        }
-        else if($balance <= 64000)
-        {
+        } else if($balance <= 64000) {
             $rating = 17;
-        }
-        else if($balance <= 70000)
-        {
+        } else if($balance <= 70000) {
             $rating = 18;
-        }
-        else if($balance <= 78000)
-        {
+        } else if($balance <= 78000) {
             $rating = 19;
-        }
-        else if($balance <= 86000)
-        {
+        } else if($balance <= 86000) {
             $rating = 20;
-        }
-        else if($balance <= 94000)
-        {
+        } else if($balance <= 94000) {
             $rating = 21;
-        }
-        else if($balance <= 102000)
-        {
+        } else if($balance <= 102000) {
             $rating = 22;
-        }
-        else if($balance <= 110000)
-        {
+        } else if($balance <= 110000) {
             $rating = 23;
-        }
-        else if($balance <= 118000)
-        {
+        } else if($balance <= 118000) {
             $rating = 24;
-        }
-        else if($balance <= 134000)
-        {
+        } else if($balance <= 134000) {
             $rating = 25;
-        }
-        else if($balance <= 144000)
-        {
+        } else if($balance <= 144000) {
             $rating = 26;
-        }
-        else if($balance <= 154000)
-        {
+        } else if($balance <= 154000) {
             $rating = 27;
-        }
-        else if($balance <= 164000)
-        {
+        } else if($balance <= 164000) {
             $rating = 28;
-        }
-        else if($balance <= 174000)
-        {
+        } else if($balance <= 174000) {
             $rating = 29;
-        }
-        else if($balance > 174000)
-        {
+        } else if($balance > 174000) {
             $rating = 30;
         }
         return $rating;

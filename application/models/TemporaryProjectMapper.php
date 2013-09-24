@@ -10,8 +10,16 @@
  */
 class Application_Model_TemporaryProjectMapper
 {
+    /**
+     * @var Application_Model_DbTable_TemporaryProject
+     */
     private $_dbTable = null;
     
+    /**
+     * Create Zend_Db_Adapter_Abstract object
+     *
+     * @return Application_Model_DbTable_TemporaryProject
+     */
     public function getTable()
     {
         if (null == $this->_dbTable) {
@@ -21,7 +29,12 @@ class Application_Model_TemporaryProjectMapper
         return $this->_dbTable;
     }
     
-    
+    /**
+     * Save project
+     *
+     * @param  Application_Model_Project $project
+     * @return int
+     */
     public function saveProject(Application_Model_Project $project)
     {
         $data = array(
@@ -43,6 +56,12 @@ class Application_Model_TemporaryProjectMapper
         return $this->getTable()->insert($data);
     }
     
+    /**
+     * Get project
+     *
+     * @param  int $projectId
+     * @return Application_Model_Project
+     */
     public function getProject($projectId)
     {
         $select = $this->getTable()->select();

@@ -10,8 +10,16 @@
  */
 class Application_Model_CreditBalanceMapper
 {
+    /**
+     * @var Application_Model_DbTable_CreditBalance
+     */
     private $_dbTable = null;
     
+    /**
+     * Create Zend_Db_Adapter_Abstract object
+     *
+     * @return Application_Model_DbTable_CreditBalance
+     */
     public function getTable()
     {
         if (null == $this->_dbTable) {
@@ -21,6 +29,12 @@ class Application_Model_CreditBalanceMapper
         return $this->_dbTable;
     }
     
+    /**
+     * Save credit balance
+     *
+     * @param  Application_Model_CreditBalance $creditBalance
+     * @return int 
+     */
     public function saveCreditBalance(Application_Model_CreditBalance $creditBalance)
     {
         $data['user_id'] = $creditBalance->getUserId();

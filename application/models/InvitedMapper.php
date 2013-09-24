@@ -10,8 +10,16 @@
  */
 class Application_Model_InvitedMapper
 {
+    /**
+     * @var Application_Model_DbTable_Invited
+     */
     private $_dbTable = null;
     
+    /**
+     * Create Zend_Db_Adapter_Abstract object
+     *
+     * @return Application_Model_DbTable_Invited
+     */
     public function getTable()
     {
         if (null == $this->_dbTable) {
@@ -21,6 +29,12 @@ class Application_Model_InvitedMapper
         return $this->_dbTable;
     }
     
+    /**
+     * Get invited member count
+     *
+     * @param  int $projectId
+     * @return int
+     */
     public function getInvitedMemberCount($projectId)
     {
         $select = $this->getTable()->select();
@@ -31,6 +45,12 @@ class Application_Model_InvitedMapper
         return $row->count;
     }
     
+    /**
+     * Save member invitation
+     *
+     * @param  Application_Model_Invited $invited
+     * @return int
+     */
     public function invitedSave(Application_Model_Invited $invited)
     {
         $data = array(
@@ -41,6 +61,13 @@ class Application_Model_InvitedMapper
         return $this->getTable()->insert($data);
     }
     
+    /**
+     * Delete member invitation
+     *
+     * @param  int $userId
+     * @param  int $projectId
+     * @return int              
+     */
     public function deleteInvited($userId, $projectId)
     {
         $where[] = $this->getTable()->getAdapter()->quoteInto('user_id = ?', $userId, 'INTEGER');

@@ -10,8 +10,16 @@
  */
 class Application_Model_ProjectMapper
 {
+    /**
+     * @var Application_Model_DbTable_Project
+     */
     private $_dbTable = null;
     
+    /**
+     * Create Zend_Db_Adapter_Abstract object
+     *
+     * @return Application_Model_DbTable_Project
+     */
     public function getTable()
     {
         if (null == $this->_dbTable) {
@@ -21,6 +29,11 @@ class Application_Model_ProjectMapper
         return $this->_dbTable;
     }
     
+    /**
+     * Get premium projects
+     *
+     * @return array $info Array of Application_Model_Project
+     */
     public function getProjectsPremium()
     {
         $select = $this->getTable()->select();
@@ -56,6 +69,14 @@ class Application_Model_ProjectMapper
         return $info;
     }
     
+    /**
+     * Get default projects
+     *
+     * @param  int   $searchType
+     * @param  int   $startLimit
+     * @param  int   $limit     
+     * @return array $info       Array of Application_Model_Project
+     */
     public function getProjectsDefault($searchType = 'latest', $startLimit = 0, $limit = 8)
     {
         if($searchType == 'latest') {    
@@ -102,6 +123,11 @@ class Application_Model_ProjectMapper
         return $info;
     }
     
+    /**
+     * Get default project count
+     *
+     * @return int
+     */
     public function getProjectsDefaultCount()
     {
         $select = $this->getTable()->select();
@@ -118,6 +144,12 @@ class Application_Model_ProjectMapper
         return $row['total_rows'];
     }
     
+    /**
+     * Get category projects
+     *
+     * @param  int   $userPrimaryCategoryId
+     * @return array $info                  Array of Application_Model_Project
+     */
     public function getProjectsByCategory($userPrimaryCategoryId)
     {
         $select = $this->getTable()->select();
@@ -152,6 +184,12 @@ class Application_Model_ProjectMapper
         return $info;
     }
     
+    /**
+     * Get project details
+     *
+     * @param  int   $projectId
+     * @return array $info      Array of Application_Model_Project
+     */
     public function getProjectDetails($pojectId)
     {
         $select = $this->getTable()->select(Zend_Db_Table::SELECT_WITH_FROM_PART);
@@ -182,6 +220,12 @@ class Application_Model_ProjectMapper
         return $project;
     }
     
+    /**
+     * Update project status to frozen
+     *
+     * @param  int $projectId
+     * @return int
+     */
     public function updateProjectFrozen($projectId)
     {
         $data = array(
@@ -190,9 +234,16 @@ class Application_Model_ProjectMapper
 
         $where = $this->getTable()->getAdapter()->quoteInto('project_id = ?', $projectId, 'INTEGER');
 
-        $this->getTable()->update($data, $where);
+        return $this->getTable()->update($data, $where);
     }
     
+    /**
+     * Update project status to close
+     *
+     * @param  int $projectId
+     * @param  int $bidderUserId
+     * @return int
+     */
     public function updateProjectClose($projectId, $bidderUserId)
     {
         $data = array(
@@ -202,9 +253,15 @@ class Application_Model_ProjectMapper
 
         $where = $this->getTable()->getAdapter()->quoteInto('project_id = ?', $projectId, 'INTEGER');
 
-        $this->getTable()->update($data, $where);
+        return $this->getTable()->update($data, $where);
     }
     
+    /**
+     * Update project status to open
+     *
+     * @param  int $projectId
+     * @return int
+     */
     public function updateProjectOpen($projectId)
     {
         $data = array(
@@ -213,9 +270,15 @@ class Application_Model_ProjectMapper
 
         $where = $this->getTable()->getAdapter()->quoteInto('project_id = ?', $projectId, 'INTEGER');
 
-        $this->getTable()->update($data, $where);
+        return $this->getTable()->update($data, $where);
     }
     
+    /**
+     * Update project archive status to archived
+     *
+     * @param  int $projectId
+     * @return int
+     */
     public function updateProjectArchive($projectId)
     {
         $data = array(
@@ -224,9 +287,15 @@ class Application_Model_ProjectMapper
 
         $where = $this->getTable()->getAdapter()->quoteInto('project_id = ?', $projectId, 'INTEGER');
 
-        $this->getTable()->update($data, $where);
+        return $this->getTable()->update($data, $where);
     }
     
+    /**
+     * Update project status to cancel
+     *
+     * @param  int $projectId
+     * @return int
+     */
     public function updateProjectCancel($projectId)
     {
         $data = array(
@@ -235,9 +304,15 @@ class Application_Model_ProjectMapper
 
         $where = $this->getTable()->getAdapter()->quoteInto('project_id = ?', $projectId, 'INTEGER');
 
-        $this->getTable()->update($data, $where);
+        return $this->getTable()->update($data, $where);
     }
     
+    /**
+     * Get project and project owner info
+     *
+     * @param  int   $projectId
+     * @return array $info      Array of Application_Model_Project
+     */
     public function getProject($projectId)
     {
         $select = $this->getTable()->select();
@@ -259,6 +334,12 @@ class Application_Model_ProjectMapper
         return $project;
     }
     
+    /**
+     * Get projects own
+     *
+     * @param  int   $userId
+     * @return array $info   Array of Application_Model_Project
+     */
     public function getProfileProjects($userId)
     {
         $select = $this->getTable()->select();
@@ -292,6 +373,15 @@ class Application_Model_ProjectMapper
         return $info;
     }
     
+    /**
+     * Get active projects the user owns
+     *
+     * @param  int   $userId
+     * @param  int   $searchType
+     * @param  int   $startLimit
+     * @param  int   $limit
+     * @return array $info       Array of Application_Model_Project
+     */
     public function getActiveProjects($userId, $searchType = 'latest', $startLimit = 0, $limit = 10)
     {
         if($searchType == 'latest') {    
@@ -344,6 +434,12 @@ class Application_Model_ProjectMapper
         return $info;
     }
     
+    /**
+     * Get active project count the user owns
+     *
+     * @param  int $userId
+     * @return int
+     */
     public function getActiveProjectsCount($userId)
     {
         $select = $this->getTable()->select();
@@ -360,7 +456,15 @@ class Application_Model_ProjectMapper
         return $row['total_rows'];
     }
     
-    
+    /**
+     * Get the projects the user bidded
+     *
+     * @param  int   $userId
+     * @param  int   $searchType
+     * @param  int   $startLimit
+     * @param  int   $limit
+     * @return array $info       Array of Application_Model_Project
+     */
     public function getBiddedProjects($userId, $searchType = 'latest', $startLimit = 0, $limit = 10)
     {
         if($searchType == 'latest') {    
@@ -419,6 +523,12 @@ class Application_Model_ProjectMapper
         return $info;
     }
     
+    /**
+     * Get count of the projects the user bidded
+     *
+     * @param  int $userId
+     * @return int
+     */
     public function getBiddedProjectsCount($userId)
     {
         $select = $this->getTable()->select();
@@ -436,7 +546,15 @@ class Application_Model_ProjectMapper
         return count($rowSets);
     }
     
-    
+    /**
+     * Get archived projcts of the user
+     *
+     * @param  int   $userId
+     * @param  int   $searchType
+     * @param  int   $startLimit
+     * @param  int   $limit
+     * @return array $info       Array of Application_Model_Project
+     */
     public function getArchiveProjects($userId, $searchType = 'latest', $startLimit = 0, $limit = 10)
     {
         if($searchType == 'latest') {    
@@ -483,6 +601,12 @@ class Application_Model_ProjectMapper
         return $info;
     }
     
+    /**
+     * Get count of archived projects of the user
+     *
+     * @param  int $userId
+     * @return int
+     */
     public function getArchiveProjectsCount($userId)
     {
         $select = $this->getTable()->select();
@@ -498,6 +622,15 @@ class Application_Model_ProjectMapper
         return $row['total_rows'];
     }
     
+    /**
+     * Get archived projects bidded by the user
+     *
+     * @param  int   $userId
+     * @param  int   $searchType
+     * @param  int   $startLimit
+     * @param  int   $limit
+     * @return array $info       Array of Application_Model_Project
+     */
     public function getArchiveBiddedProjects($userId, $searchType = 'latest', $startLimit = 0, $limit = 10)
     {
         if($searchType == 'latest') {    
@@ -544,6 +677,12 @@ class Application_Model_ProjectMapper
         return $info;
     }
     
+    /**
+     * Get count of archived projects bidded by the user
+     *
+     * @param  int   $userId
+     * @return array $info   Array of Application_Model_Message
+     */
     public function getArchiveBiddedProjectsCount($userId)
     {
         $select = $this->getTable()->select();
@@ -559,6 +698,12 @@ class Application_Model_ProjectMapper
         return $row['total_rows'];
     }
     
+    /**
+     * Get assigned user of the project
+     *
+     * @param  int                       $projectId
+     * @return Application_Model_Project
+     */
     public function getProjectAssignedUser($projectId)
     {
         $select = $this->getTable()->select();
@@ -580,6 +725,12 @@ class Application_Model_ProjectMapper
         return $project;
     }
     
+    /**
+     * Save project
+     *
+     * @param  Application_Model_Project $project
+     * @return int
+     */
     public function saveProject(Application_Model_Project $project)
     {
         $data = array(

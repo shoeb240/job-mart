@@ -10,8 +10,16 @@
  */
 class Application_Model_TemporaryProjectAttachmentMapper
 {
+    /**
+     * @var Application_Model_DbTable_TemporaryProjectAttachment
+     */
     private $_dbTable = null;
     
+    /**
+     * Create Zend_Db_Adapter_Abstract object
+     *
+     * @return Application_Model_DbTable_TemporaryProjectAttachment
+     */
     public function getTable()
     {
         if (null == $this->_dbTable) {
@@ -21,6 +29,12 @@ class Application_Model_TemporaryProjectAttachmentMapper
         return $this->_dbTable;
     }
     
+    /**
+     * Get project attachments of the project
+     *
+     * @param  int   $projectId
+     * @return array $info      Array of Application_Model_ProjectAttachment
+     */
     public function getProjectAttachments($projectId)
     {
         $select = $this->getTable()->select();
@@ -41,6 +55,12 @@ class Application_Model_TemporaryProjectAttachmentMapper
         return $info;
     }
     
+    /**
+     * Save project attachment
+     *
+     * @param  Application_Model_ProjectAttachment $projectAttachment
+     * @return int
+     */
     public function saveProjectAttachment(Application_Model_ProjectAttachment $projectAttachment)
     {
         $data = array(

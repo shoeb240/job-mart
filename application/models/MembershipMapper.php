@@ -10,8 +10,16 @@
  */
 class Application_Model_MembershipMapper
 {
+    /**
+     * @var Application_Model_DbTable_Membership
+     */
     private $_dbTable = null;
     
+    /**
+     * Create Zend_Db_Adapter_Abstract object
+     *
+     * @return Application_Model_DbTable_Membership
+     */
     public function getTable()
     {
         if (null == $this->_dbTable) {
@@ -21,7 +29,12 @@ class Application_Model_MembershipMapper
         return $this->_dbTable;
     }
     
-    public function getMembershipList()
+    /**
+     * Get premiummembership list
+     *
+     * @return array $info Array of Application_Model_Membership
+     */
+    public function getPremiumMembershipList()
     {
         $select = $this->getTable()->select();
         $select->where('status = ?', 1)
@@ -45,6 +58,12 @@ class Application_Model_MembershipMapper
         return $info;
     }
     
+    /**
+     * Save new membership
+     *
+     * @param  Application_Model_Membership $membership
+     * @return int
+     */
     public function saveMembership(Application_Model_Membership $membership)
     {
         $data['project_id']       = $membership->getProjectId();
@@ -54,6 +73,14 @@ class Application_Model_MembershipMapper
         return $this->getTable()->insert($data);
     }
     
+    /**
+     * Update membership status as deleted
+     *
+     * @param  int $projectId
+     * @param  int $senderUserId
+     * @param  int $userId      
+     * @return int                  The number of rows updated.
+     */
     public function deleteMembership($projectId, $senderUserId, $userId)
     {
         $data = array(
@@ -64,7 +91,7 @@ class Application_Model_MembershipMapper
         $where[] = $this->getTable()->getAdapter()->quoteInto('SENDER_user_id = ?', $senderUserId, 'INTEGER');
         $where[] = $this->getTable()->getAdapter()->quoteInto('RECEIVER_user_id = ?', $userId, 'INTEGER');
 
-        $this->getTable()->update($data, $where);
+        return $this->getTable()->update($data, $where);
     }
     
 
